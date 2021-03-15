@@ -17,7 +17,7 @@ class _Bit(ApiBitdotio):
     def __init__(self, access_token):
         assert access_token
         configuration = Configuration(
-            host = "https://api.bit.io",
+            host = "https://api.bit.io/api/v1beta",
         )
         configuration.access_token = access_token
         self.access_token = access_token
