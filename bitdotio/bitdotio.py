@@ -2,7 +2,7 @@
 from __future__ import print_function
 import time
 import bitdotio
-from bitdotio import Configuration, ApiClient, ApiApi
+from bitdotio import Configuration, ApiClient, ApiBitdotio
 from bitdotio.rest import ApiException
 import psycopg2
 from pprint import pprint
@@ -11,7 +11,7 @@ from pprint import pprint
 def bitdotio(access_token):
     return _Bit(access_token)
 
-class _Bit(ApiApi):
+class _Bit(ApiBitdotio):
     _port = 5432
     _host = "db.bit.io"
     def __init__(self, access_token):
@@ -36,4 +36,6 @@ class _Bit(ApiApi):
 
     def get_connection(self):
         conn_str = self._token_to_creds()
-        return psycopg2.connect(self._token_to_creds())
+        conn = psycopg2.connect(self._token_to_creds())
+        conn.autocommit = True
+        return conn
