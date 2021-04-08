@@ -8,3 +8,4 @@ set -e
 pip install wheel bumpversion twine
 python setup.py sdist bdist_wheel
 python -m twine check dist/*
+python -m twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
