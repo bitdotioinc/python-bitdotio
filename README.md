@@ -22,13 +22,30 @@ pprint(cur.fetchone())
 
 # Requirements
 
-`bitdotio` requires a local installation of PostgreSQL, version 12 or greater. This is because the 
-underlying connection management library is `psycopg2` which links against the PostgreSQL library. 
+In order to support different environments, we have a few ways to install the bitdotio package
+with or without the `psycopg2` dependency.
+
+1. If you already have `psycopg2` installed, you can install the default bitdotio package:
+```
+pip install bitdotio
+```
+
+2. If you already have Postgres installed, you can install with the psycopg2 depedency:
+```
+pip install bitdotio[psycopg2]
+```
+
+3. If you do not have or cannot install Postgres, you can install with the psycopg2-binary dependency:
+```
+pip install bitdotio[psycopg2-binary]
+```
+
+## Install Postgres
 
 To install Postgres on Windows, go to https://www.postgresql.org/download/ and download the version
 that is correct for your computer, or use your operating system's preferred package manager.
 
-After you have Postgres installed you can install this library with `pip install bitdotio`.
+After you have Postgres installed you can install this library with `pip install bitdotio[psycopg2]`.
 
 
 # Usage
