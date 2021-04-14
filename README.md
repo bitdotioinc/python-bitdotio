@@ -30,7 +30,7 @@ with or without the `psycopg2` dependency.
 pip install bitdotio
 ```
 
-2. If you already have Postgres installed, you can install with the psycopg2 depedency:
+2. If you already have Postgres installed, you can install with the psycopg2 dependency:
 ```
 pip install bitdotio[psycopg2]
 ```
