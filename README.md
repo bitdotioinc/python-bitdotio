@@ -32,12 +32,12 @@ pip install bitdotio
 
 2. If you already have Postgres installed, you can install with the psycopg2 dependency:
 ```
-pip install bitdotio[psycopg2]
+pip install 'bitdotio[psycopg2]'
 ```
 
 3. If you do not have or cannot install Postgres, you can install with the psycopg2-binary dependency:
 ```
-pip install bitdotio[psycopg2-binary]
+pip install 'bitdotio[psycopg2-binary]'
 ```
 
 ## Install Postgres
