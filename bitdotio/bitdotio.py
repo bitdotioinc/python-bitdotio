@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 from __future__ import print_function
-import sys
 import time
 import bitdotio
 from bitdotio import Configuration, ApiClient, ApiBitdotio
 from bitdotio.rest import ApiException
+import psycopg2
 from pprint import pprint
+
 
 def bitdotio(access_token):
     return _Bit(access_token)
@@ -34,34 +35,8 @@ class _Bit(ApiBitdotio):
         return f"dbname={db} user={user} password={password} host={host} port={port}"
 
     def get_connection(self):
-        try:
-            import psycopg2
-        except ImportError as e:
-            _print_psycopg2_message()
-            raise e
-
         conn_str = self._token_to_creds()
         conn = psycopg2.connect(self._token_to_creds())
         conn.autocommit = True
+
         return conn
-
-
-def _print_psycopg2_message():
-    print("""
-It looks like we couldn't import the psycopg2 library!
-
-In order to support different environments, we have a few ways to install the bitdotio package
-with or without the psycopg2 dependency.
-
-1. If you already have psycopg2 install, you can install the default bitdotio package:
-
-  pip install bitdotio
-
-2. If you already have Postgres installed, you can install with the psycopg2 dependency:
-
-  pip install bitdotio[psycopg2]
-
-3. If you do not have or cannot install Postgres, you can install with the psycopg2-binary dependency:
-
-  pip install bitdotio[psycopg2-binary]
-""", file=sys.stderr)

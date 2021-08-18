@@ -12,11 +12,11 @@ import sys
 import unittest
 
 import bitdotio
-from bitdotio.model.query_result import QueryResult
+from bitdotio.model.import_url import ImportUrl
 
 
-class TestQueryResult(unittest.TestCase):
-    """QueryResult unit test stubs"""
+class TestImportUrl(unittest.TestCase):
+    """ImportUrl unit test stubs"""
 
     def setUp(self):
         pass
@@ -24,10 +24,10 @@ class TestQueryResult(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testQueryResult(self):
-        """Test QueryResult"""
+    def testImportUrl(self):
+        """Test ImportUrl"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = QueryResult()  # noqa: E501
+        # model = ImportUrl()  # noqa: E501
         pass
 
 

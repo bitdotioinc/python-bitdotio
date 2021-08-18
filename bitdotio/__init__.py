@@ -1,5 +1,3 @@
-# coding: utf-8
-
 # flake8: noqa
 
 """
@@ -12,30 +10,19 @@
 """
 
 
-from __future__ import absolute_import
-
 __version__ = "1.0.0"
-
-# import apis into sdk package
-from bitdotio.api.api_bitdotio import ApiBitdotio
 
 # import ApiClient
 from bitdotio.api_client import ApiClient
+
+# import Configuration
 from bitdotio.configuration import Configuration
+
+# import exceptions
 from bitdotio.exceptions import OpenApiException
+from bitdotio.exceptions import ApiAttributeError
 from bitdotio.exceptions import ApiTypeError
 from bitdotio.exceptions import ApiValueError
 from bitdotio.exceptions import ApiKeyError
 from bitdotio.exceptions import ApiException
-# import models into sdk package
-from bitdotio.models.column import Column
-from bitdotio.models.q_connection import QConnection
-from bitdotio.models.q_endpoint import QEndpoint
-from bitdotio.models.q_user import QUser
-from bitdotio.models.q_user_profile import QUserProfile
-from bitdotio.models.query_result import QueryResult
-from bitdotio.models.repo import Repo
-from bitdotio.models.repo_collaborators import RepoCollaborators
-from bitdotio.models.table import Table
-
 from bitdotio.bitdotio import bitdotio
