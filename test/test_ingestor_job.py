@@ -12,11 +12,11 @@ import sys
 import unittest
 
 import bitdotio
-from bitdotio.model.query_result import QueryResult
+from bitdotio.model.ingestor_job import IngestorJob
 
 
-class TestQueryResult(unittest.TestCase):
-    """QueryResult unit test stubs"""
+class TestIngestorJob(unittest.TestCase):
+    """IngestorJob unit test stubs"""
 
     def setUp(self):
         pass
@@ -24,10 +24,10 @@ class TestQueryResult(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testQueryResult(self):
-        """Test QueryResult"""
+    def testIngestorJob(self):
+        """Test IngestorJob"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = QueryResult()  # noqa: E501
+        # model = IngestorJob()  # noqa: E501
         pass
 
 
