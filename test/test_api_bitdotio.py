@@ -1,5 +1,3 @@
-# coding: utf-8
-
 """
     bit.io REST API
 
@@ -10,56 +8,41 @@
 """
 
 
-from __future__ import absolute_import
-
 import unittest
 
 import bitdotio
 from bitdotio.api.api_bitdotio import ApiBitdotio  # noqa: E501
-from bitdotio.rest import ApiException
 
 
 class TestApiBitdotio(unittest.TestCase):
     """ApiBitdotio unit test stubs"""
 
     def setUp(self):
-        self.api = bitdotio.api.api_bitdotio.ApiBitdotio()  # noqa: E501
+        self.api = ApiBitdotio()  # noqa: E501
 
     def tearDown(self):
         pass
 
-    def test_address_q_connection(self):
-        """Test case for address_q_connection
+    def test_create_import_file(self):
+        """Test case for create_import_file
 
         """
         pass
 
-    def test_address_q_endpoint(self):
-        """Test case for address_q_endpoint
+    def test_create_import_json(self):
+        """Test case for create_import_json
 
         """
         pass
 
-    def test_create_column(self):
-        """Test case for create_column
+    def test_create_import_url(self):
+        """Test case for create_import_url
 
         """
         pass
 
-    def test_create_q_connection(self):
-        """Test case for create_q_connection
-
-        """
-        pass
-
-    def test_create_q_endpoint(self):
-        """Test case for create_q_endpoint
-
-        """
-        pass
-
-    def test_create_query_result(self):
-        """Test case for create_query_result
+    def test_create_query(self):
+        """Test case for create_query
 
         """
         pass
@@ -70,62 +53,8 @@ class TestApiBitdotio(unittest.TestCase):
         """
         pass
 
-    def test_create_table(self):
-        """Test case for create_table
-
-        """
-        pass
-
-    def test_destroy_column(self):
-        """Test case for destroy_column
-
-        """
-        pass
-
-    def test_destroy_q_connection(self):
-        """Test case for destroy_q_connection
-
-        """
-        pass
-
-    def test_destroy_q_endpoint(self):
-        """Test case for destroy_q_endpoint
-
-        """
-        pass
-
     def test_destroy_repo(self):
         """Test case for destroy_repo
-
-        """
-        pass
-
-    def test_destroy_table(self):
-        """Test case for destroy_table
-
-        """
-        pass
-
-    def test_list_columns(self):
-        """Test case for list_columns
-
-        """
-        pass
-
-    def test_list_q_connections(self):
-        """Test case for list_q_connections
-
-        """
-        pass
-
-    def test_list_q_endpoints(self):
-        """Test case for list_q_endpoints
-
-        """
-        pass
-
-    def test_list_q_users(self):
-        """Test case for list_q_users
 
         """
         pass
@@ -136,68 +65,14 @@ class TestApiBitdotio(unittest.TestCase):
         """
         pass
 
-    def test_list_tables(self):
-        """Test case for list_tables
-
-        """
-        pass
-
-    def test_partial_update_column(self):
-        """Test case for partial_update_column
-
-        """
-        pass
-
-    def test_partial_update_q_connection(self):
-        """Test case for partial_update_q_connection
-
-        """
-        pass
-
-    def test_partial_update_q_endpoint(self):
-        """Test case for partial_update_q_endpoint
-
-        """
-        pass
-
-    def test_partial_update_q_user(self):
-        """Test case for partial_update_q_user
-
-        """
-        pass
-
     def test_partial_update_repo(self):
         """Test case for partial_update_repo
 
         """
         pass
 
-    def test_partial_update_table(self):
-        """Test case for partial_update_table
-
-        """
-        pass
-
-    def test_retrieve_column(self):
-        """Test case for retrieve_column
-
-        """
-        pass
-
-    def test_retrieve_q_connection(self):
-        """Test case for retrieve_q_connection
-
-        """
-        pass
-
-    def test_retrieve_q_endpoint(self):
-        """Test case for retrieve_q_endpoint
-
-        """
-        pass
-
-    def test_retrieve_q_user(self):
-        """Test case for retrieve_q_user
+    def test_retrieve_ingestor_job(self):
+        """Test case for retrieve_ingestor_job
 
         """
         pass
@@ -208,56 +83,8 @@ class TestApiBitdotio(unittest.TestCase):
         """
         pass
 
-    def test_retrieve_table(self):
-        """Test case for retrieve_table
-
-        """
-        pass
-
-    def test_share_repo(self):
-        """Test case for share_repo
-
-        """
-        pass
-
-    def test_share_table(self):
-        """Test case for share_table
-
-        """
-        pass
-
-    def test_update_column(self):
-        """Test case for update_column
-
-        """
-        pass
-
-    def test_update_q_connection(self):
-        """Test case for update_q_connection
-
-        """
-        pass
-
-    def test_update_q_endpoint(self):
-        """Test case for update_q_endpoint
-
-        """
-        pass
-
-    def test_update_q_user(self):
-        """Test case for update_q_user
-
-        """
-        pass
-
     def test_update_repo(self):
         """Test case for update_repo
-
-        """
-        pass
-
-    def test_update_table(self):
-        """Test case for update_table
 
         """
         pass
