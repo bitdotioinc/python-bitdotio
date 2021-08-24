@@ -1,15 +1,13 @@
-# Repo
+# ImportUrl
 
 
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**name** | **str** |  | 
-**url** | **str** |  | [optional] [readonly] 
-**description** | **str** |  | [optional] 
-**documentation** | **str** |  | [optional] 
-**bytes** | **int** |  | [optional] [readonly] 
-**is_private** | **bool** |  | [optional] 
+**url** | **str** |  | 
+**table_name** | **str** |  | 
+**repo_name** | **str** |  | 
+**create_table_if_not_exists** | **bool** |  | [optional]  if omitted the server will use the default value of True
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
