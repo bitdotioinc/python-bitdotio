@@ -1,15 +1,12 @@
-# Repo
+# Query
 
 
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**name** | **str** |  | 
-**url** | **str** |  | [optional] [readonly] 
-**description** | **str** |  | [optional] 
-**documentation** | **str** |  | [optional] 
-**bytes** | **int** |  | [optional] [readonly] 
-**is_private** | **bool** |  | [optional] 
+**query_string** | **str** |  | 
+**fields** | **{str: (bool, date, datetime, dict, float, int, list, str, none_type)}** |  | [optional] [readonly] 
+**data** | **[bool, date, datetime, dict, float, int, list, str, none_type]** |  | [optional] [readonly] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

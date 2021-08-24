@@ -12,11 +12,11 @@ import sys
 import unittest
 
 import bitdotio
-from bitdotio.model.repo import Repo
+from bitdotio.model.ingestion_result import IngestionResult
 
 
-class TestRepo(unittest.TestCase):
-    """Repo unit test stubs"""
+class TestIngestionResult(unittest.TestCase):
+    """IngestionResult unit test stubs"""
 
     def setUp(self):
         pass
@@ -24,10 +24,10 @@ class TestRepo(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testRepo(self):
-        """Test Repo"""
+    def testIngestionResult(self):
+        """Test IngestionResult"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = Repo()  # noqa: E501
+        # model = IngestionResult()  # noqa: E501
         pass
 
 
