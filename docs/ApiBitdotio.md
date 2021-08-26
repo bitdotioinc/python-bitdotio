@@ -18,7 +18,7 @@ Method | HTTP request | Description
 
 
 # **create_import_file**
-> IngestionResult create_import_file()
+> IngestionResult create_import_file(file_to_import, repo_name)
 
 
 
@@ -30,7 +30,6 @@ import time
 import bitdotio
 from bitdotio.api import api_bitdotio
 from bitdotio.model.ingestion_result import IngestionResult
-from bitdotio.model.import_file import ImportFile
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.bit.io/api/v1beta
 # See configuration.py for a list of all supported configuration parameters.
@@ -52,17 +51,22 @@ configuration = bitdotio.Configuration(
 with bitdotio.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = api_bitdotio.ApiBitdotio(api_client)
-    import_file = ImportFile(
-        file_to_import=open('/path/to/file', 'rb'),
-        table_name="table_name_example",
-        create_table_if_not_exists=True,
-        repo_name="repo_name_example",
-    ) # ImportFile |  (optional)
+    file_to_import = open('/path/to/file', 'rb') # file_type | 
+    repo_name = "repo_name_example" # str | 
+    table_name = "table_name_example" # str |  (optional)
+    create_table_if_not_exists = True # bool |  (optional) if omitted the server will use the default value of True
+
+    # example passing only required values which don't have defaults set
+    try:
+        api_response = api_instance.create_import_file(file_to_import, repo_name)
+        pprint(api_response)
+    except bitdotio.ApiException as e:
+        print("Exception when calling ApiBitdotio->create_import_file: %s\n" % e)
 
     # example passing only required values which don't have defaults set
     # and optional values
     try:
-        api_response = api_instance.create_import_file(import_file=import_file)
+        api_response = api_instance.create_import_file(file_to_import, repo_name, table_name=table_name, create_table_if_not_exists=create_table_if_not_exists)
         pprint(api_response)
     except bitdotio.ApiException as e:
         print("Exception when calling ApiBitdotio->create_import_file: %s\n" % e)
@@ -73,7 +77,10 @@ with bitdotio.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **import_file** | [**ImportFile**](ImportFile.md)|  | [optional]
+ **file_to_import** | **file_type**|  |
+ **repo_name** | **str**|  |
+ **table_name** | **str**|  | [optional]
+ **create_table_if_not_exists** | **bool**|  | [optional] if omitted the server will use the default value of True
 
 ### Return type
 
@@ -85,7 +92,7 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: application/json, application/x-www-form-urlencoded, multipart/form-data
+ - **Content-Type**: multipart/form-data
  - **Accept**: application/json
 
 
