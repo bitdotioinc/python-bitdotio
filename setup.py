@@ -20,23 +20,44 @@ VERSION = "1.0.3b1"
 
 REQUIRES = ["urllib3 >= 1.15", "six >= 1.10", "certifi", "python-dateutil", "psycopg2 >= 2.8.6", "click >= 8.0.1"]
 
+
+EXTRAS = {
+    "psycopg2": [
+        "psycopg2>=2.8.6",
+    ],
+    "psycopg2-binary": [
+        "psycopg2-binary>=2.8.6",
+    ],
+}
+
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
 setup(
     name=NAME,
     version=VERSION,
-    description="bit.io Python SDK",
+    description="bit.io Python SDK and CLI",
     author="bit.io",
     author_email="python@bit.io",
-    url="https://bit.io/",
+    url="https://github.com/bitdotioinc/python-bitdotio",
     keywords=["bit.io", "Database", "bit.io Python SDK"],
     install_requires=REQUIRES,
+	extras_require=EXTRAS,
     packages=find_packages(exclude=["test", "tests"]),
     include_package_data=True,
+	long_description=long_description,
+    long_description_content_type="text/markdown",
+    project_urls={
+        "Bug Tracker": "https://github.com/bitdotioinc/python-bitdotio/issues",
+    },
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "Operating System :: OS Independent",
+    ],
+    python_requires=">=3.7",
     entry_points={
         'console_scripts': [
             'bit = bit.bit:main',
         ]
     },
-    long_description="""\
-    bit.io Python SDK  # noqa: E501
-    """
 )
