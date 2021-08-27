@@ -9,7 +9,6 @@
 # import sys
 # sys.setrecursionlimit(n)
 
-from bitdotio.model.import_file import ImportFile
 from bitdotio.model.import_json import ImportJson
 from bitdotio.model.import_url import ImportUrl
 from bitdotio.model.ingestion_result import IngestionResult

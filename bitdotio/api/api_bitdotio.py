@@ -21,7 +21,6 @@ from bitdotio.model_utils import (  # noqa: F401
     none_type,
     validate_and_convert_types
 )
-from bitdotio.model.import_file import ImportFile
 from bitdotio.model.import_json import ImportJson
 from bitdotio.model.import_url import ImportUrl
 from bitdotio.model.ingestion_result import IngestionResult
@@ -44,6 +43,8 @@ class ApiBitdotio(object):
 
         def __create_import_file(
             self,
+            file_to_import,
+            repo_name,
             **kwargs
         ):
             """create_import_file  # noqa: E501
@@ -51,12 +52,16 @@ class ApiBitdotio(object):
             This method makes a synchronous HTTP request by default. To make an
             asynchronous HTTP request, please pass async_req=True
 
-            >>> thread = api.create_import_file(async_req=True)
+            >>> thread = api.create_import_file(file_to_import, repo_name, async_req=True)
             >>> result = thread.get()
 
+            Args:
+                file_to_import (file_type):
+                repo_name (str):
 
             Keyword Args:
-                import_file (ImportFile): [optional]
+                table_name (str): [optional]
+                create_table_if_not_exists (bool): [optional] if omitted the server will use the default value of True
                 _return_http_data_only (bool): response data without head status
                     code and headers. Default is True.
                 _preload_content (bool): if False, the urllib3.HTTPResponse object
@@ -101,6 +106,10 @@ class ApiBitdotio(object):
                 '_check_return_type', True
             )
             kwargs['_host_index'] = kwargs.get('_host_index')
+            kwargs['file_to_import'] = \
+                file_to_import
+            kwargs['repo_name'] = \
+                repo_name
             return self.call_with_http_info(**kwargs)
 
         self.create_import_file = _Endpoint(
@@ -116,9 +125,15 @@ class ApiBitdotio(object):
             },
             params_map={
                 'all': [
-                    'import_file',
+                    'file_to_import',
+                    'repo_name',
+                    'table_name',
+                    'create_table_if_not_exists',
                 ],
-                'required': [],
+                'required': [
+                    'file_to_import',
+                    'repo_name',
+                ],
                 'nullable': [
                 ],
                 'enum': [
@@ -132,13 +147,26 @@ class ApiBitdotio(object):
                 'allowed_values': {
                 },
                 'openapi_types': {
-                    'import_file':
-                        (ImportFile,),
+                    'file_to_import':
+                        (file_type,),
+                    'repo_name':
+                        (str,),
+                    'table_name':
+                        (str,),
+                    'create_table_if_not_exists':
+                        (bool,),
                 },
                 'attribute_map': {
+                    'file_to_import': 'file_to_import',
+                    'repo_name': 'repo_name',
+                    'table_name': 'table_name',
+                    'create_table_if_not_exists': 'create_table_if_not_exists',
                 },
                 'location_map': {
-                    'import_file': 'body',
+                    'file_to_import': 'form',
+                    'repo_name': 'form',
+                    'table_name': 'form',
+                    'create_table_if_not_exists': 'form',
                 },
                 'collection_format_map': {
                 }
@@ -148,8 +176,6 @@ class ApiBitdotio(object):
                     'application/json'
                 ],
                 'content_type': [
-                    'application/json',
-                    'application/x-www-form-urlencoded',
                     'multipart/form-data'
                 ]
             },
