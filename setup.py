@@ -10,7 +10,7 @@
 from setuptools import setup, find_packages  # noqa: H301
 
 NAME = "bitdotio"
-VERSION = "1.0.2b"
+VERSION = "1.0.3b1"
 # To install the library, run the following
 #
 # python setup.py install
@@ -18,7 +18,7 @@ VERSION = "1.0.2b"
 # prerequisite: setuptools
 # http://pypi.python.org/pypi/setuptools
 
-REQUIRES = ["urllib3 >= 1.15", "six >= 1.10", "certifi", "python-dateutil", "psycopg2 >= 2.8.6"]
+REQUIRES = ["urllib3 >= 1.15", "six >= 1.10", "certifi", "python-dateutil", "psycopg2 >= 2.8.6", "click >= 8.0.1"]
 
 setup(
     name=NAME,
@@ -31,6 +31,11 @@ setup(
     install_requires=REQUIRES,
     packages=find_packages(exclude=["test", "tests"]),
     include_package_data=True,
+    entry_points={
+        'console_scripts': [
+            'bit = bit.bit:main',
+        ]
+    },
     long_description="""\
     bit.io Python SDK  # noqa: E501
     """
