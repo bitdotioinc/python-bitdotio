@@ -42,10 +42,10 @@ setup(
     url="https://github.com/bitdotioinc/python-bitdotio",
     keywords=["bit.io", "Database", "bit.io Python SDK"],
     install_requires=REQUIRES,
-	extras_require=EXTRAS,
+    extras_require=EXTRAS,
     packages=find_packages(exclude=["test", "tests"]),
     include_package_data=True,
-	long_description=long_description,
+    long_description=long_description,
     long_description_content_type="text/markdown",
     project_urls={
         "Bug Tracker": "https://github.com/bitdotioinc/python-bitdotio/issues",
