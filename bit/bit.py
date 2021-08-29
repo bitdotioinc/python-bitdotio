@@ -12,6 +12,7 @@ import posixpath
 @click.pass_context
 def bitio(ctx, key, verbose):
     b = bitdotio.bitdotio(key)
+    b.api_client.user_agent = b.api_client.user_agent + "/CLI"
     if verbose:
         b.api_client.configuration.debug = True
     ctx.obj = b

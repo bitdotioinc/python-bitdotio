@@ -10,7 +10,7 @@
 from setuptools import setup, find_packages  # noqa: H301
 
 NAME = "bitdotio"
-VERSION = "1.0.3b1"
+VERSION = "1.0.4b1"
 # To install the library, run the following
 #
 # python setup.py install
