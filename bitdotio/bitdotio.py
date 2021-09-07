@@ -6,6 +6,7 @@ from bitdotio import Configuration, ApiClient, ApiBitdotio
 from bitdotio.rest import ApiException
 import psycopg2
 from pprint import pprint
+from . import model
 
 
 def bitdotio(access_token):
@@ -34,6 +35,10 @@ class _Bit(ApiBitdotio):
         host = self._host
         port = self._port
         return f"dbname={db} user={user} password={password} host={host} port={port}"
+
+    def query(self, query_string, fields={}, data=[]):
+        query_obj = model.query.Query(query_string=query_string, fields=fields, data=data)
+        return self.create_query(query=query_obj)
 
     def get_connection(self):
         conn_str = self._token_to_creds()
