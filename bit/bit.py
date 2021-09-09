@@ -34,7 +34,7 @@ def query(b, query, query_file):
         raise click.UsageError("One of --query or --query_file is required.")
 
     query_obj = bitdotio.model.query.Query(query_string=query_string)
-    print(b.create_query(query=query_obj))
+    print_json_model(b.create_query(query=query_obj))
 
 
 @bitio.group()
@@ -53,19 +53,19 @@ def create(b, repo_name, description, is_private):
     r = bitdotio.model.repo.Repo(name=repo_name)
     r.description = description
     r.is_private = is_private
-    print(b.create_repo(repo=r))
+    print_json_model(b.create_repo(repo=r))
 
 @repo.command()
 @click.pass_obj
 def list(b):
-    print(b.list_repos())
+    print_json_model_list(b.list_repos())
 
 # bit.py -k your_api_key_here repo retrieve -n demo_repo
 @repo.command()
 @click.option("-r", "--repo_name", required=True, help="The repo name.")
 @click.pass_obj
 def retrieve(b, repo_name):
-    print(b.retrieve_repo(repo_name))
+    print_json_model(b.retrieve_repo(repo_name))
 
 # bit.py -k your_api_key_here repo destroy -n demo_repo
 @repo.command()
@@ -74,9 +74,9 @@ def retrieve(b, repo_name):
 @click.pass_obj
 def destroy(b, name, yes):
     if yes:
-        print(b.destroy_repo(name))
+        print_json_model(b.destroy_repo(name))
     elif click.confirm(f"Are you sure you want destroy the repo {name}?"):
-        print(b.destroy_repo(name))
+        print_json_model(b.destroy_repo(name))
 
 
 @bitio.group(name="import")
@@ -88,7 +88,7 @@ def import_stub(b):
 @click.option("-i", "--job_id", required=True, help="The importer job id.")
 @click.pass_obj
 def status(b, job_id):
-    print(b.retrieve_ingestor_job(q_uuid=job_id))
+    print_json_model(b.retrieve_ingestor_job(q_uuid=job_id))
 
 @import_stub.command()
 @click.option("-r", "--repo_name", required=True, help="The repo name.")
@@ -102,7 +102,7 @@ def json_data(b, repo_name, table_name, data):
         json_obj = json.loads(json_str)
         import_json = bitdotio.model.import_json.ImportJson(json_str, table_name, repo_name)
         ingestor_job_details = b.create_import_json(import_json=import_json)
-        print(ingestor_job_details)
+        print_json_model(ingestor_job_details)
 
 @import_stub.command()
 @click.option("-r", "--repo_name", required=True, help="The repo name.")
@@ -118,7 +118,7 @@ def url(b, repo_name, table_name, url):
         import_url = bitdotio.model.import_url.ImportUrl(url, filename, repo_name)
 
     ingestor_job_details = b.create_import_url(import_url=import_url)
-    print(ingestor_job_details)
+    print_json_model(ingestor_job_details)
 
 @import_stub.command()
 @click.option("-r", "--repo_name", required=True, help="The repo name.")
@@ -135,7 +135,13 @@ def file(b, repo_name, table_name, file_name):
         ingestor_job_details = b.create_import_file(file_name, repo_name, table_name=table_name)
     else:
         ingestor_job_details = b.create_import_file(file_name, repo_name)
-    print(ingestor_job_details)
+    print_json_model(ingestor_job_details)
+
+def print_json_model(model):
+    print(json.dumps(model.to_dict(), indent = 4))
+
+def print_json_model_list(models):
+    print(json.dumps([x.to_dict() for x in models], indent = 4))
 
 def main():
     try:
