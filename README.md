@@ -172,14 +172,15 @@ bit -k <your_key> import file -r my_new_repo -f foo.csv -t from_file
 
 You'll get:
 
-```
-{'file_name': 'foo.csv',
- 'job_id': '34a0539f-39f8-483c-84b5-c858c7d26e10',
- 'message': 'Uploaded file foo.csv saved successfully from sender adam@bit.io '
-            'and an ingestion job has been created with the status RECEIVED',
- 'repo_name': 'my_new_repo',
- 'result': 'success',
- 'table_name': 'from_file'}
+```json
+{
+    "result": "success",
+    "message": "Uploaded file addresses.csv saved successfully from sender adam@bit.io and an ingestion job has been created with the status RECEIVED",
+    "table_name": "from_file",
+    "repo_name": "my_new_repo",
+    "job_id": "34a0539f-39f8-483c-84b5-c858c7d26e10",
+    "file_name": "addresses.csv"
+}
 ```
 
 You can use that `job_id` in the status command.
@@ -192,14 +193,15 @@ cat foo.csv | bit -k <your_key> import file -r my_new_repo -f - --table_name foo
 
 And you'll get:
 
-```
-{'file_name': '<stdin>',
- 'job_id': '6b4fad58-ad2a-4506-847c-98a7478f7132',
- 'message': 'Uploaded file <stdin> saved successfully from sender adam@bit.io '
-            'and an ingestion job has been created with the status RECEIVED',
- 'repo_name': 'my_new_repo',
- 'result': 'success',
- 'table_name': 'foo_table'}
+```json
+{
+    "result": "success",
+    "message": "Uploaded file <stdin> saved successfully from sender adam@bit.io and an ingestion job has been created with the status RECEIVED",
+    "table_name": "foo_table",
+    "repo_name": "my_new_repo",
+    "job_id": "c9a551b2-3149-4439-9527-952e7a3fe23",
+    "file_name": "<stdin>"
+}
 ```
 
 ### Import status
@@ -211,15 +213,17 @@ bit -k <your_key> import status -i 34a0539f-39f8-483c-84b5-c858c7d26e10
 
 And you'd get:
 
-```
-{'file_type': None,
- 'job_id': '34a0539f-39f8-483c-84b5-c858c7d26e10',
- 'original_filename': 'foo.csv',
- 'repo_name': 'my_new_repo',
- 'retries': 0,
- 'state': 'DONE',
- 'status_message': '',
- 'table_name': 'from_file'}
+```json
+{
+    "job_id": "34a0539f-39f8-483c-84b5-c858c7d26e10",
+    "state": "DONE",
+    "status_message": "",
+    "retries": 0,
+    "file_type": null,
+    "original_filename": "addresses.csv",
+    "repo_name": "my_new_repo",
+    "table_name": "from_file"
+}
 ```
 
 
@@ -231,16 +235,16 @@ bit -k <your_key> import url -r my_new_repo -u https://storage.googleapis.com/bi
 
 And you'll get:
 
-```
-{'file_name': 'atl_2020_home_sales.csv',
- 'job_id': '3ce55893-0517-4d48-9486-c78319e85b7f',
- 'message': 'https://storage.googleapis.com/bitdotio-demo-datasets/atl_2020_home_sales.csv '
-            'queued for processing successfully, and an ingestion job has been '
-            'created with the status RECEIVED',
- 'repo_name': 'my_new_repo',
- 'result': 'success',
- 'table_name': 'atl_2020_home_sales.csv',
- 'url': 'https://storage.googleapis.com/bitdotio-demo-datasets/atl_2020_home_sales.csv'}
+```json
+{
+    "result": "success",
+    "message": "https://storage.googleapis.com/bitdotio-demo-datasets/atl_2020_home_sales.csv queued for processing successfully, and an ingestion job has been created with the status RECEIVED",
+    "table_name": "atl_2020_home_sales.csv",
+    "repo_name": "my_new_repo",
+    "job_id": "a837e2ed-2bd2-44ae-a3f0-e18f52274061",
+    "file_name": "atl_2020_home_sales.csv",
+    "url": "https://storage.googleapis.com/bitdotio-demo-datasets/atl_2020_home_sales.csv"
+}
 ```
 
 
@@ -252,15 +256,15 @@ echo "[[1,2], [3,4]]" | bit -k <your_key> import json-data -r my_new_repo -t jso
 
 And you'll get:
 
-```
-{'file_name': 'adam_522adc0b-4b86-4677-aa19-4efe2054925f.json',
- 'job_id': '5f43b204-a0ea-41da-b81b-66ba7f01bc93',
- 'message': 'Uploaded file adam_522adc0b-4b86-4677-aa19-4efe2054925f.json '
-            'saved successfully from sender adam@bit.io and an ingestion job '
-            'has been created with the status RECEIVED',
- 'repo_name': 'my_new_repo',
- 'result': 'success',
- 'table_name': 'json_test'}
+```json
+{
+    "result": "success",
+    "message": "Uploaded file adam_e6d3aaf4-0469-4bf7-a06a-eb6683c1e563.json saved successfully from sender adam@bit.io and an ingestion job has been created with the status RECEIVED",
+    "table_name": "json_test",
+    "repo_name": "my_new_repo",
+    "job_id": "436d0335-184c-42f1-98b3-d24be2ef7701",
+    "file_name": "adam_e6d3aaf4-0469-4bf7-a06a-eb6683c1e563.json"
+}
 ```
 
 ## Querying data
@@ -285,32 +289,38 @@ bit -k <your_key> repo list
 ```
 
 You'll get something like:
-```
-[{'bytes': 385024,
- 'description': '',
- 'documentation': '',
- 'is_private': True,
- 'name': 'AFL Crowds'}, {'bytes': 0,
- 'description': '',
- 'documentation': '',
- 'is_private': True,
- 'name': 'bitio_from_segment'}, {'bytes': 21618688,
- 'description': 'FCC data',
- 'documentation': '2021 FCC Spectrum Auction information and data.',
- 'is_private': False,
- 'name': 'FCC'}, {'bytes': 139264,
- 'description': 'test for support ticket',
- 'documentation': '',
- 'is_private': True,
- 'name': 'nat_test'}, {'bytes': 0,
- 'description': '',
- 'documentation': '',
- 'is_private': False,
- 'name': 'new_repo2'}, {'bytes': 139264,
- 'description': 'sadfasdf',
- 'documentation': '',
- 'is_private': True,
- 'name': 'test_nat_2'}]
+
+```json
+[
+    {
+        "name": "demo_repo",
+        "description": "",
+        "documentation": "",
+        "bytes": 622592,
+        "is_private": true
+    },
+    {
+        "name": "my_new_repo",
+        "description": "",
+        "documentation": "",
+        "bytes": 13099008,
+        "is_private": true
+    },
+    {
+        "name": "my-repo",
+        "description": "my-repo",
+        "documentation": "",
+        "bytes": 16384,
+        "is_private": true
+    },
+    {
+        "name": "power-usage",
+        "description": "",
+        "documentation": "",
+        "bytes": 16384,
+        "is_private": true
+    }
+]
 ```
 
 ### Create a repo
@@ -321,12 +331,14 @@ bit -k <your_key> repo create -r my_new_repo
 
 And you'll get:
 
-```
-{'bytes': 0,
- 'description': '',
- 'documentation': '',
- 'is_private': True,
- 'name': 'my_new_repo'}
+```json
+{
+    "name": "my_new_repo",
+    "description": "",
+    "documentation": "",
+    "bytes": 0,
+    "is_private": true
+}
 ```
 
 ### Get a specific repo's information
@@ -337,12 +349,12 @@ bit -k <your_key> repo retrieve -r my_new_repo
 
 And you'll get:
 
+```json
+{
+    "name": "my_new_repo",
+    "description": "",
+    "documentation": "",
+    "bytes": 0,
+    "is_private": true
+}
 ```
-{'bytes': 0,
- 'description': '',
- 'documentation': '',
- 'is_private': True,
- 'name': 'my_new_repo'}
-```
-
-
