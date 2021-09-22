@@ -6,16 +6,35 @@ import json
 from urllib.parse import urlparse
 import posixpath
 
-@click.group()
+
+
+# Allows overriding the required `-k` when subcommands have `--help`
+# From https://stackoverflow.com/questions/55818737/python-click-application-required-parameters-have-precedence-over-sub-command-he
+class IgnoreRequiredWithHelp(click.Group):
+    def parse_args(self, ctx, args):
+        try:
+            return super(IgnoreRequiredWithHelp, self).parse_args(ctx, args)
+        except click.MissingParameter as exc:
+            if '--help' not in args:
+
+            # remove the required params so that help can display
+            for param in self.params:
+                if param.name == "key":
+                    param.required = False
+                    break
+            return super(IgnoreRequiredWithHelp, self).parse_args(ctx, args)
+
+@click.group(cls=IgnoreRequiredWithHelp)
 @click.option("-k", "--key", required=True, help="Your bit.io API key, available when you click the connect button in bit.io")
 @click.option("-v", "--verbose", default=False, is_flag=True, show_default=True, help="Verbose output")
 @click.pass_context
 def bitio(ctx, key, verbose):
-    b = bitdotio.bitdotio(key)
-    b.api_client.user_agent = b.api_client.user_agent + "/CLI"
-    if verbose:
-        b.api_client.configuration.debug = True
-    ctx.obj = b
+    if key:
+        b = bitdotio.bitdotio(key)
+        b.api_client.user_agent = b.api_client.user_agent + "/CLI"
+        if verbose:
+            b.api_client.configuration.debug = True
+        ctx.obj = b
 
 
 #  python3 bit.py -k your_api_key_here query -q "SELECT *  FROM \"a/demo_repo\".\"atl_home_sales\""
