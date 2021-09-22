@@ -16,7 +16,7 @@ class IgnoreRequiredWithHelp(click.Group):
             return super(IgnoreRequiredWithHelp, self).parse_args(ctx, args)
         except click.MissingParameter as exc:
             if '--help' not in args:
-
+                raise
             # remove the required params so that help can display
             for param in self.params:
                 if param.name == "key":
