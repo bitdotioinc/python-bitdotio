@@ -37,7 +37,7 @@ class TestBitQuery(unittest.TestCase):
             mock_import.assert_called_once()
             mock_import.assert_called_with("some_url", "some_table", "some_repo")
 
-    def test_import_file_no_key(self):
+    def test_import_url_no_key(self):
         """Test that `bit import url` fails without a key"""
 
         with patch.object(bitdotio.model.import_url, "ImportUrl") as mock_import:
@@ -79,6 +79,26 @@ class TestBitQuery(unittest.TestCase):
             )
             mock_import.assert_called_once()
             mock_import.assert_called_with('{"some_json":1}', "some_table", "some_repo")
+
+    @patch('bitdotio.bitdotio')
+    def test_import_file(self, mock_bitdotio):
+        runner = CliRunner()
+        result = runner.invoke(
+                bitio,
+                [
+                    "-k",
+                    "<API_KEY>",
+                    "import",
+                    "json-data",
+                    "-r",
+                    "some_repo",
+                    "-t",
+                    "some_table",
+                    "-f",
+                    "some_file"
+                ]
+            )
+        mock_bitdotio.assert_called_once()
 
 
 if __name__ == "__main__":
