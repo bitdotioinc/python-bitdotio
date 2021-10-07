@@ -29,9 +29,8 @@ class TestBitQuery(unittest.TestCase):
             runner = CliRunner()
             result = runner.invoke(bitio, ["query", "--query", "Some Query Text"])
             #mock_query.assert_not_called()
-            #assert result.exception
-            pass
-
+            assert result.exception
+            
 
 if __name__ == "__main__":
     unittest.main()

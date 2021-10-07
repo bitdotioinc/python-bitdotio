@@ -10,7 +10,11 @@ from unittest.mock import Mock, patch
 @mock.patch.dict(os.environ, {"BITIO_KEY": ""})
 class TestBitQuery(unittest.TestCase):
     def setUp(self) -> None:
-         return super().setUp()
+        var_mask = "bitio"
+        for key in os.environ.keys():
+            if key.lower().startswith(var_mask):
+                del os.environ[key]
+        return super().setUp()
 
     def tearDown(self) -> None:
         return super().tearDown()
@@ -39,8 +43,7 @@ class TestBitQuery(unittest.TestCase):
             
     def test_import_url_no_key(self):
         """Test that `bit import url` fails without a key"""
-
-        with patch.object(bitdotio.model.import_url, "ImportUrl") as mock_import:
+        with patch.object(bitdotio.model.import_url, "ImportUrl") as mock_import_no_key:
             runner = CliRunner()
             result = runner.invoke(
                 bitio,
@@ -55,8 +58,8 @@ class TestBitQuery(unittest.TestCase):
                     "some_url",
                 ],
             )
-            #mock_import.assert_not_called()
-            #assert result.exception
+            #mock_import_no_key.assert_not_called()
+            assert result.exception
             pass
 
 
