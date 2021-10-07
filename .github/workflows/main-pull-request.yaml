@@ -4,6 +4,7 @@ on:
   pull_request: 
     branches:
     - dev/testathon
+    - main
 jobs:
   unit-testing:
     runs-on: ubuntu-latest
