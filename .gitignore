@@ -1,4 +1,6 @@
 bitdotio.egg-info
 build
 dist
+env
 __pycache__
+.vscode/settings.json
