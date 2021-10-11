@@ -10,10 +10,6 @@ from unittest.mock import Mock, patch
 @mock.patch.dict(os.environ, {"BITIO_KEY": ""})
 class TestBitQuery(unittest.TestCase):
     def setUp(self) -> None:
-        var_mask = "bitio"
-        for key in os.environ.keys():
-            if key.lower().startswith(var_mask):
-                del os.environ[key]
         return super().setUp()
 
     def tearDown(self) -> None:
@@ -40,7 +36,8 @@ class TestBitQuery(unittest.TestCase):
             )
             mock_import.assert_called_once()
             mock_import.assert_called_with("some_url", "some_table", "some_repo")
-            
+    # This is still not working! Clearing the environ leads to other issues (need to set utf encode)
+    #@mock.patch.dict(os.environ, clear=True)
     def test_import_url_no_key(self):
         """Test that `bit import url` fails without a key"""
         with patch.object(bitdotio.model.import_url, "ImportUrl") as mock_import_no_key:
@@ -58,10 +55,10 @@ class TestBitQuery(unittest.TestCase):
                     "some_url",
                 ],
             )
-            #mock_import_no_key.assert_not_called()
+            breakpoint()
+            mock_import_no_key.assert_not_called()
             assert result.exception
             pass
-
 
     def test_import_json(self):
         """Test that `bit import json-data` calls bitdotio.model.import_json"""
@@ -85,24 +82,25 @@ class TestBitQuery(unittest.TestCase):
             mock_import.assert_called_once()
             mock_import.assert_called_with('{"some_json":1}', "some_table", "some_repo")
 
-    @patch('bitdotio.bitdotio')
+    @patch("bitdotio.bitdotio")
     def test_import_file(self, mock_bitdotio):
         runner = CliRunner()
         result = runner.invoke(
-                bitio,
-                [
-                    "-k",
-                    "<API_KEY>",
-                    "import",
-                    "json-data",
-                    "-r",
-                    "some_repo",
-                    "-t",
-                    "some_table",
-                    "-f",
-                    "some_file"
-                ]
-            )
+            bitio,
+            [
+                "-k",
+                "<API_KEY>",
+                "import",
+                "json-data",
+                "-r",
+                "some_repo",
+                "-t",
+                "some_table",
+                "-f",
+                "some_file",
+                "bitio",
+            ],
+        )
         mock_bitdotio.assert_called_once()
 
 

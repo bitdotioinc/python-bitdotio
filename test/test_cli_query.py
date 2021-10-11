@@ -7,9 +7,13 @@ from click.testing import CliRunner
 from unittest.mock import Mock, patch
 
 
-@mock.patch.dict(os.environ, {"BITIO_KEY": ""})
+#@mock.patch.dict(os.environ, {"BITIO_KEY": ""})
 class TestBitQuery(unittest.TestCase):
     def setUp(self) -> None:
+        var_mask = "bitio"
+        for key in os.environ.keys():
+            if key.lower().startswith(var_mask):
+                del os.environ[key]
         return super().setUp()
 
     def tearDown(self) -> None:
@@ -26,9 +30,11 @@ class TestBitQuery(unittest.TestCase):
 
     def test_query_no_key(self):
         with patch.object(bitdotio.model.query, "Query") as mock_query:
+            mock_query.reset_mock()
             runner = CliRunner()
-            result = runner.invoke(bitio, ["query", "--query", "Some Query Text"])
-            #mock_query.assert_not_called()
+            result = runner.invoke(bitio, ["query", "--query", "Some Query Text", "bitio"])
+            #breakpoint()
+            mock_query.assert_not_called()
             assert result.exception
             
 
