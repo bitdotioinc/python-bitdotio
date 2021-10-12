@@ -13,6 +13,8 @@ class TestBitQuery(unittest.TestCase):
         return super().setUp()
 
     def tearDown(self) -> None:
+        bitio.params[0].required=True
+
         return super().tearDown()
 
     def test_import_url(self):
@@ -36,8 +38,8 @@ class TestBitQuery(unittest.TestCase):
             )
             mock_import.assert_called_once()
             mock_import.assert_called_with("some_url", "some_table", "some_repo")
-    # This is still not working! Clearing the environ leads to other issues (need to set utf encode)
-    #@mock.patch.dict(os.environ, clear=True)
+
+
     def test_import_url_no_key(self):
         """Test that `bit import url` fails without a key"""
         with patch.object(bitdotio.model.import_url, "ImportUrl") as mock_import_no_key:
@@ -55,10 +57,9 @@ class TestBitQuery(unittest.TestCase):
                     "some_url",
                 ],
             )
-            breakpoint()
+            #breakpoint()
             mock_import_no_key.assert_not_called()
             assert result.exception
-            pass
 
     def test_import_json(self):
         """Test that `bit import json-data` calls bitdotio.model.import_json"""

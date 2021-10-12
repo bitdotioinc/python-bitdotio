@@ -11,6 +11,7 @@ class TestBitHelp(unittest.TestCase):
         return super().setUp()
 
     def tearDown(self) -> None:
+        #bitio.params[0].required=True
         return super().tearDown()
 
     def test_help(self):
