@@ -1,8 +1,19 @@
 import os
 import unittest
 from unittest import mock
+
 from bit.bit import bitio
 from click.testing import CliRunner
+
+"""
+click.testing.CliRunner is not thread safe! This will likely cause
+future tests affecting interpreter state to fail.
+
+`bitio.params[0].required = True` in teardown addresses the case where
+a test of '--help' functionality without a key changes the bitio 'key'
+parameter requirement to "False," causing later tests of the key
+requirement to fail.
+"""
 
 
 @mock.patch.dict(os.environ, {"BITIO_KEY": ""})
@@ -11,7 +22,7 @@ class TestBitHelp(unittest.TestCase):
         return super().setUp()
 
     def tearDown(self) -> None:
-        #bitio.params[0].required=True
+        bitio.params[0].required = True
         return super().tearDown()
 
     def test_help(self):
@@ -40,4 +51,3 @@ class TestBitHelp(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
