@@ -107,7 +107,6 @@ class TestBitQuery(unittest.TestCase):
                 "some_table",
                 "-f",
                 "some_file",
-                "bitio",
             ],
         )
         mock_bitdotio.assert_called_once()
