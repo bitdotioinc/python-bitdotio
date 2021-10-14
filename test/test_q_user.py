@@ -66,8 +66,9 @@ class TestQUser(unittest.TestCase):
 
     def testQUser(self):
         """Test QUser"""
-        inst_req_only = self.make_instance(include_optional=False)
-        inst_req_and_optional = self.make_instance(include_optional=True)
+        # inst_req_only = self.make_instance(include_optional=False)
+        # inst_req_and_optional = self.make_instance(include_optional=True)
+        pass
 
 
 if __name__ == '__main__':
