@@ -20,4 +20,4 @@ jobs:
           python -m pip install --upgrade pip -r requirements.txt
           python -m pip install --upgrade pip -r test-requirements.txt
       - name: Run unit tests
-        run: python -m unittest discover test
+        run: python -m unittest discover test --verbose
