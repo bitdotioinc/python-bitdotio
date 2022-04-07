@@ -45,9 +45,6 @@ from pprint import pprint
 # Connect to bit.io
 b = bitdotio.bitdotio(<YOUR_API_KEY>)
 
-# List repos
-pprint(b.list_repos())
-
 # How about some database queries?
 # NOTE: v2 connections require specification of the database name, because
 # v2 bit.io is built around independent user databases, not repos (schemas) on a single database.
