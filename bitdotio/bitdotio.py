@@ -78,7 +78,6 @@ class _BitV2(_HostConfigMixin):
         'create_query',
         'create_repo',
         'destroy_repo',
-        'get_connection',
         'list_repos',
         'partial_update_repo',
         'query',
