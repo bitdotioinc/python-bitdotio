@@ -2,9 +2,23 @@
 
 # bitdotio module
 
-Example usage:
+The bit.io Python SDK supports two major versions of bit.io: v1 and v2. 
 
-```
+The v1 SDK is instantiated using a v1 bit.io API token and supports listings repos,
+running queries, and importing data using methods of the SDK object returned by
+the `bitdotio` function. The v1 SDK object can also generate pre-configured `psycopg2`
+connections to v1 bit.io.
+
+The v2 SDK currently only supports generation of pre-configured `psycopg2` connections
+to v2 bit.io. We plan to add further SDK features for v2 based on user feedback. 
+
+Both versions of the SDK are instantiated by calling the `bitdotio` function with
+either a v1 or v2 API token. The version of SDK object returned is based on the
+version of the provided token. 
+
+Example v1 usage:
+
+```python
 #!/usr/bin/env python3
 import bitdotio
 from pprint import pprint
@@ -12,6 +26,7 @@ from pprint import pprint
 # Connect to bit.io
 b = bitdotio.bitdotio(<YOUR_API_KEY>)
 
+# List repos
 pprint(b.list_repos())
 
 # How about some database queries?
@@ -21,6 +36,23 @@ cur.execute("SELECT 1")
 pprint(cur.fetchone())
 ```
 
+Example v2 usage:
+```python
+#!/usr/bin/env python3
+import bitdotio
+from pprint import pprint
+
+# Connect to bit.io
+b = bitdotio.bitdotio(<YOUR_API_KEY>)
+
+# How about some database queries?
+# NOTE: v2 connections require specification of the database name, because
+# v2 bit.io is built around independent user databases, not repos (schemas) on a single database.
+conn = b.get_connection(<YOUR_DATABASE_NAME>)
+cur = conn.cursor()
+cur.execute("SELECT 1")
+pprint(cur.fetchone())
+```
 
 ## Requirements
 
@@ -63,7 +95,7 @@ See https://docs.bit.io/docs/connecting-to-bitio screenshots and examples.
 
 `bitdotio` provides easy Python access to querying your data with just a bit.io API key:
 
-```
+```python
 #!/usr/bin/env python3
 import bitdotio
 
@@ -71,6 +103,7 @@ import bitdotio
 b = bitdotio.bitdotio(<YOUR_API_KEY>)
 
 conn = b.get_connection()
+# for v2: conn = b.get_connection(<YOUR_DATABASE_NAME>)
 cur = conn.cursor()
 cur.execute("SELECT 1")
 print(cur.fetchone())
@@ -78,35 +111,13 @@ print(cur.fetchone())
 
 The connection and cursor provided by `bitdotio` are fully Python DB-API compatible, are in fact Pyscopg2 connections and cursors.
 
-Full documentation on Psycopg2 can be found on https://www.psycopg.org/docs/usage.html
+Full documentation on Psycopg2 can be found on https://www.psycopg.org/docs/usage.html.
 
-
-### bitdotio usage
-
-`bitdotio` can also do almost everything you can do on bit.io's main site.
-
-```
-#!/usr/bin/env python3
-import bitdotio
-from pprint import pprint
-
-# Connect to bit.io
-b = bitdotio.bitdotio(<YOUR_API_KEY>)
-
-# Let's see your repos
-pprint(b.list_repos())
-```
-
-You can use the SDK to create/update/delete repos and query data. In general the SDK is fully mapped to the REST API;
-the documentation for the REST API is availble at https://docs.bit.io/reference
-
-
-# bit.io concepts
+# v1 bit.io concepts
 
 bit.io is a database, with extra features like easy sharing and collaboration. We have a few concepts that the SDK works with:
 
-* Repostories ("repos") - a schema, in Postgres terms, that contains tables and columns. You can have public and private repositories, and you can write SQL that joins
-any repo you have access to with another repo. A repo contains tables, and tables contain columns.
+* Repostories ("repos") - a schema, in Postgres terms, that contains tables and columns. You can have public and private repositories, and you can write SQL that joins any repo you have access to with another repo. A repo contains tables, and tables contain columns.
 
 Detailed documentation on interacting with each concept with the SDK:
 
@@ -114,16 +125,15 @@ Detailed documentation on interacting with each concept with the SDK:
  - [Repo](https://github.com/bitdotioinc/python-bitdotio/blob/main/docs/Repo.md)
 
 
-# bit.io CLI usage
+# v1 bit.io CLI usage
 
-
-Installing the bitdotio module also installs the command line tool `bit` which lets you interact with bit.io
+Installing the bitdotio module also installs the command line tool `bit` which lets you interact with v1 bit.io
 from scripts or the command line. This is installed next to your python binary.
 
 You'll want to grab your API key from your bit.io account - to get the key, log into to bit.io and
 click on the green "Connect" button, and copy the API key.
 
-
+Note: v2 bit.io doesn't have a CLI yet. The CLI will not work with v2 bit.io tokens.
 
 ```
 Usage: bit [OPTIONS] COMMAND [ARGS]...
