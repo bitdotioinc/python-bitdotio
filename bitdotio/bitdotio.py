@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import print_function
+from inspect import Attribute
 import time
 import bitdotio
 from bitdotio import Configuration, ApiClient, ApiBitdotio
@@ -10,11 +11,22 @@ from . import model
 
 
 def bitdotio(access_token):
-    return _Bit(access_token)
+    # determine bit.io version from the token format
+    token_parts = access_token.split('_')
+    if len(token_parts) == 2:
+        return _Bit(access_token)
+    elif (len(token_parts) == 3) and (token_parts[0] == 'v2'):
+        return _BitV2(access_token)
+    else:
+        raise ValueError("Invalid access token format.")
 
-class _Bit(ApiBitdotio):
+
+class _HostConfigMixin():
     _port = 5432
     _host = "db.bit.io"
+
+
+class _Bit(_HostConfigMixin, ApiBitdotio):
     def __init__(self, access_token):
         assert access_token
         configuration = Configuration(
@@ -25,6 +37,9 @@ class _Bit(ApiBitdotio):
         self.api_client = ApiClient(configuration)
         self.api_client.user_agent = "bit.io-SDK/1.0.0/python"
         super().__init__(self.api_client)
+
+    def __repr__(self):
+        return "<bitdotio SDK object: v1>"
 
     def _token_to_creds(self):
         # Both _user_ and _db_ here are to satisfy psycopg2, but bit.io itself
@@ -48,11 +63,63 @@ class _Bit(ApiBitdotio):
             raise e
 
         conn_str = self._token_to_creds()
-        conn = psycopg2.connect(self._token_to_creds())
+        conn = psycopg2.connect(conn_str)
         conn.autocommit = True
 
         return conn
 
+
+class _BitV2(_HostConfigMixin):
+    _BACKWARDS_INCOMPATIBLE_ATTRIBUTES = [
+        'api_client',
+        'create_import_file',
+        'create_import_json',
+        'create_import_url',
+        'create_query',
+        'create_repo',
+        'destroy_repo',
+        'get_connection',
+        'list_repos',
+        'partial_update_repo',
+        'query',
+        'retrieve_ingestor_job',
+        'retrieve_repo',
+        'update_repo',
+        ]
+    
+    def __init__(self, access_token):
+        assert access_token
+        self.access_token = access_token
+
+    def __repr__(self):
+        return "<bitdotio SDK object: v2>"
+
+    # inform user when an attempt is made to access v1-only attribute 
+    def __getattr__(self, name):
+        if name in self._BACKWARDS_INCOMPATIBLE_ATTRIBUTES:
+            raise AttributeError(f"You have configured the SDK with a v2 token, and '{name}' is currently limited to v1.")
+        else:
+            raise AttributeError(f"'_BitV2' object has no attribute '{name}'")
+
+    def _token_to_creds(self, database_name):
+        db = database_name
+        user = "api_user"
+        password = self.access_token
+        host = self._host
+        port = self._port
+        return f"dbname={db} user={user} password={password} host={host} port={port}"
+
+    def get_connection(self, database_name):
+        try:
+            import psycopg2
+        except ImportError as e:
+            _print_psycopg2_message()
+            raise e
+
+        conn_str = self._token_to_creds(database_name)
+        conn = psycopg2.connect(conn_str)
+
+        return conn
 
 def _print_psycopg2_message():
     print("""
