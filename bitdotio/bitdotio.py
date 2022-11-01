@@ -49,7 +49,7 @@ class _Bit(_HostConfigMixin, ApiBitdotio):
         password = self.access_token
         host = self._host
         port = self._port
-        return f"dbname={db} user={user} password={password} host={host} port={port}"
+        return f"dbname={db} user={user} password={password} host={host} port={port} sslmode=require"
 
     def query(self, query_string, fields={}, data=[]):
         query_obj = model.query.Query(query_string=query_string, fields=fields, data=data)
