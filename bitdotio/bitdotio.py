@@ -106,7 +106,7 @@ class _BitV2(_HostConfigMixin):
         password = self.access_token
         host = self._host
         port = self._port
-        return f"dbname={db} user={user} password={password} host={host} port={port}"
+        return f"dbname={db} user={user} password={password} host={host} port={port} sslmode=require"
 
     def get_connection(self, database_name):
         try:
