@@ -6,7 +6,7 @@ import typing as t
 from requests import Response
 
 from bitdotio.api_client import ApiClient
-from bitdotio.utils import validate_token
+from bitdotio.utils import validate_database_name, validate_token
 
 API_VERSION = "v2beta"
 
@@ -100,7 +100,7 @@ class _BitV2:
 
     @api_method()
     def get_database(self, db_name: str):
-        # TODO: validate db name
+        validate_database_name(db_name)
         return self._api_client.get(f"/db/{db_name}")
 
     @api_method()
@@ -111,6 +111,7 @@ class _BitV2:
         is_private: t.Optional[bool] = None,
         storage_limit_bytes: t.Optional[int] = None,
     ):
+        validate_database_name(db_name)
         request_body = {
             k: v
             for k, v in {
@@ -125,6 +126,7 @@ class _BitV2:
 
     @api_method()
     def delete_database(self, db_name: str):
+        validate_database_name(db_name)
         return self._api_client.delete(f"/db/{db_name}")
 
 
