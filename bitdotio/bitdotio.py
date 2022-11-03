@@ -3,17 +3,21 @@ from __future__ import print_function
 import re
 import sys
 
+from bitdotio.utils import validate_token
 
 BASE56 = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz"
 TOKEN_RE = re.compile(
     r"^(?i:bearer) (?P<token>v2+_[" + BASE56 + "]+_[" + BASE56 + "]+)$"
 )
 
+API_VERSION = "v2beta"
 
-def _validate_token(access_token):
-    if TOKEN_RE.fullmatch(access_token) is None:
-        raise ValueError("Invalid access token")
 
+def bitdotio(
+    access_token: str,
+    api_version: str = API_VERSION,
+):
+    return _BitV2(access_token, api_version)
 
 def bitdotio(access_token):
     _validate_token(access_token)
@@ -25,9 +29,10 @@ class _BitV2:
     _port = 5432
     _host = "db.bit.io"
 
-    def __init__(self, access_token):
-        assert access_token
-        self.access_token = access_token
+    def __init__(self, access_token: str, api_version: str) -> None:
+        validate_token(access_token)
+
+        self._access_token = access_token
 
     def __repr__(self):
         return "<bitdotio SDK object: v2>"
@@ -35,7 +40,7 @@ class _BitV2:
     def _token_to_creds(self, database_name):
         db = database_name
         user = "api_user"
-        password = self.access_token
+        password = self._access_token
         host = self._host
         port = self._port
         return f"dbname={db} user={user} password={password} host={host} port={port} sslmode=require"
