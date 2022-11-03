@@ -1,4 +1,6 @@
+import functools
 import re
+import warnings
 
 
 _RE_TOKEN = re.compile(r"^v2_\w+$")
@@ -17,6 +19,24 @@ def validate_database_name(db_name: str):
 
 def validate_min_max_conn(min_conn: int, max_conn: int):
     if min_conn < 0 or max_conn < 0:
-        raise ValueError("min_conn and max_conn must both be greater than or equal to zero")
+        raise ValueError(
+            "min_conn and max_conn must both be greater than or equal to zero"
+        )
     if min_conn >= max_conn:
         raise ValueError("min_conn must be strictly less than max_conn")
+
+
+class _DeprecationWarning(UserWarning):
+    pass
+
+
+def deprecated(msg: str):
+    def decorator(fn):
+        @functools.wraps(fn)
+        def wrapper(*args, **kwargs):
+            warnings.warn(msg, _DeprecationWarning, stacklevel=2)
+            return fn(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
