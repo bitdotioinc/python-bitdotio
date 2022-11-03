@@ -13,3 +13,10 @@ def validate_token(token: str):
 def validate_database_name(db_name: str):
     if _RE_DB_NAME.fullmatch(db_name) is None:
         raise ValueError("Invalid database name")
+
+
+def validate_min_max_conn(min_conn: int, max_conn: int):
+    if min_conn < 0 or max_conn < 0:
+        raise ValueError("min_conn and max_conn must both be greater than or equal to zero")
+    if min_conn >= max_conn:
+        raise ValueError("min_conn must be strictly less than max_conn")

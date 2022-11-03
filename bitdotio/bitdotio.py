@@ -2,11 +2,12 @@
 import functools
 import sys
 import typing as t
+from contextlib import contextmanager
 
 from requests import Response
 
 from bitdotio.api_client import ApiClient
-from bitdotio.utils import validate_database_name, validate_token
+from bitdotio.utils import validate_database_name, validate_min_max_conn, validate_token
 
 API_VERSION = "v2beta"
 
@@ -14,8 +15,10 @@ API_VERSION = "v2beta"
 def bitdotio(
     access_token: str,
     api_version: str = API_VERSION,
+    min_conn: int = 0,
+    max_conn: int = 100,
 ):
-    return _BitV2(access_token, api_version)
+    return _BitV2(access_token, api_version, min_conn, max_conn)
 
 
 class ApiError(Exception):
@@ -52,34 +55,79 @@ class _BitV2:
     _port = 5432
     _host = "db.bit.io"
 
-    def __init__(self, access_token: str, api_version: str) -> None:
+    def __init__(
+        self,
+        access_token: str,
+        api_version: str,
+        min_conn: int,
+        max_conn: int,
+    ) -> None:
         validate_token(access_token)
+        validate_min_max_conn(min_conn, max_conn)
 
         self._access_token = access_token
         self._api_client = ApiClient(access_token, api_version)
+        self._min_conn = min_conn
+        self._max_conn = max_conn
+
+        self._pools = {}
 
     def __repr__(self):
         return "<bitdotio SDK object: v2>"
 
-    def _token_to_creds(self, database_name):
-        db = database_name
+    def _get_conn_string(self, db_name):
+        db = db_name
         user = "api_user"
         password = self._access_token
         host = self._host
         port = self._port
         return f"dbname={db} user={user} password={password} host={host} port={port} sslmode=require"
 
-    def get_connection(self, database_name):
+    def get_connection(self, db_name):
         try:
             import psycopg2
         except ImportError as e:
             _print_psycopg2_message()
             raise e
 
-        conn_str = self._token_to_creds(database_name)
+        conn_str = self._get_conn_string(db_name)
         conn = psycopg2.connect(conn_str)
 
         return conn
+
+    @contextmanager
+    def connect(self, db_name: str):
+        pool, conn = None, None
+        try:
+            pool = self._pools.get(db_name)
+            if pool is None:
+                try:
+                    # Threadsafe by default
+                    # TODO: do we care about supporting SimpleConnectionPool?
+                    from psycopg2.pool import ThreadedConnectionPool
+                except ImportError as exc:
+                    _print_psycopg2_message()
+                    raise exc
+
+                conn_string = self._get_conn_string(db_name)
+                pool = ThreadedConnectionPool(
+                    self._min_conn,
+                    self._max_conn,
+                    conn_string,
+                )
+                self._pools[db_name] = pool
+
+                conn = pool.getconn()
+                yield conn
+        finally:
+            if pool is not None and conn is not None:
+                pool.putconn(conn)
+
+    @contextmanager
+    def cursor(self, db_name: str):
+        with self.connect(db_name) as conn:
+            with conn.cursor() as cursor:
+                yield cursor
 
     @api_method(returning="databases")
     def list_databases(self):
