@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-from __future__ import print_function
-import re
+import functools
 import sys
+import typing as t
 
+from requests import Response
+
+from bitdotio.api_client import ApiClient
 from bitdotio.utils import validate_token
-
-BASE56 = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz"
-TOKEN_RE = re.compile(
-    r"^(?i:bearer) (?P<token>v2+_[" + BASE56 + "]+_[" + BASE56 + "]+)$"
-)
 
 API_VERSION = "v2beta"
 
@@ -19,9 +17,34 @@ def bitdotio(
 ):
     return _BitV2(access_token, api_version)
 
-def bitdotio(access_token):
-    _validate_token(access_token)
-    return _BitV2(access_token)
+
+class ApiError(Exception):
+    def __init__(self, status_code: int, data: t.Any) -> None:
+        self.status_code = status_code
+        self.data = data
+
+    def __str__(self) -> str:
+        return f"ApiError status_code={self.status_code} data={self.data}"
+
+
+def api_method(
+    returning: t.Optional[str] = None,
+) -> t.Callable[[t.Callable[..., Response]], t.Callable[..., t.Any]]:
+    def decorator(method: t.Callable[..., Response]) -> t.Callable[..., t.Any]:
+        @functools.wraps(method)
+        def wrapper(*args, **kwargs):
+            response = method(*args, **kwargs)
+            body = response.json()
+            if response.ok:
+                if returning:
+                    return body[returning]
+                return body
+
+            raise ApiError(response.status_code, body)
+
+        return wrapper
+
+    return decorator
 
 
 class _BitV2:
@@ -33,6 +56,7 @@ class _BitV2:
         validate_token(access_token)
 
         self._access_token = access_token
+        self._api_client = ApiClient(access_token, api_version)
 
     def __repr__(self):
         return "<bitdotio SDK object: v2>"
@@ -56,6 +80,52 @@ class _BitV2:
         conn = psycopg2.connect(conn_str)
 
         return conn
+
+    @api_method(returning="databases")
+    def list_databases(self):
+        return self._api_client.get("/db/")
+
+    @api_method()
+    def create_database(
+        self,
+        name: str,
+        is_private: bool = True,
+        storage_limit_bytes: t.Optional[int] = None,
+    ):
+        request_body = {"name": name, "is_private": is_private}
+        if storage_limit_bytes:
+            request_body["storage_limit_bytes"] = storage_limit_bytes
+
+        return self._api_client.post("/db/", json=request_body)
+
+    @api_method()
+    def get_database(self, db_name: str):
+        # TODO: validate db name
+        return self._api_client.get(f"/db/{db_name}")
+
+    @api_method()
+    def update_database(
+        self,
+        db_name: str,
+        name: t.Optional[str] = None,
+        is_private: t.Optional[bool] = None,
+        storage_limit_bytes: t.Optional[int] = None,
+    ):
+        request_body = {
+            k: v
+            for k, v in {
+                "name": name,
+                "is_private": is_private,
+                "storage_limit_bytes": storage_limit_bytes,
+            }.items()
+            if v is not None
+        }
+
+        return self._api_client.patch(f"/db/{db_name}", json=request_body)
+
+    @api_method()
+    def delete_database(self, db_name: str):
+        return self._api_client.delete(f"/db/{db_name}")
 
 
 def _print_psycopg2_message():
