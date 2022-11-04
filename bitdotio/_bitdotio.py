@@ -89,6 +89,28 @@ class _BitV2:
         port = self._port
         return f"dbname={db} user={user} password={password} host={host} port={port} sslmode=require"
 
+    def _get_pool(self, db_name: str):
+        pool = self._pools.get(db_name)
+        if pool is not None:
+            return pool
+
+        try:
+            # Threadsafe by default
+            # TODO: do we care about supporting SimpleConnectionPool?
+            from psycopg2.pool import ThreadedConnectionPool
+        except ImportError as exc:
+            _print_psycopg2_message()
+            raise exc
+
+        conn_string = self._get_conn_string(db_name)
+        pool = ThreadedConnectionPool(
+            self._min_conn,
+            self._max_conn,
+            conn_string,
+        )
+        self._pools[db_name] = pool
+        return pool
+
     @deprecated(
         "The get_connection() interface is deprecated and will be removed in a future vestion of the bit.io python SDK. Please use the connect() and cursor() interfaces."
     )
@@ -108,26 +130,9 @@ class _BitV2:
     def connect(self, db_name: str):
         pool, conn = None, None
         try:
-            pool = self._pools.get(db_name)
-            if pool is None:
-                try:
-                    # Threadsafe by default
-                    # TODO: do we care about supporting SimpleConnectionPool?
-                    from psycopg2.pool import ThreadedConnectionPool
-                except ImportError as exc:
-                    _print_psycopg2_message()
-                    raise exc
-
-                conn_string = self._get_conn_string(db_name)
-                pool = ThreadedConnectionPool(
-                    self._min_conn,
-                    self._max_conn,
-                    conn_string,
-                )
-                self._pools[db_name] = pool
-
-                conn = pool.getconn()
-                yield conn
+            pool = self._get_pool(db_name)
+            conn = pool.getconn()
+            yield conn
         finally:
             if pool is not None and conn is not None:
                 pool.putconn(conn)

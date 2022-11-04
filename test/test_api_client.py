@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 from bitdotio.api_client import ApiClient
-from bitdotio.bitdotio import API_VERSION
+from bitdotio._bitdotio import API_VERSION
 
 
 class TestApiClient(unittest.TestCase):
