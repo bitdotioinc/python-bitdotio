@@ -89,6 +89,14 @@ class _BitV2:
         port = self._port
         return f"dbname={db} user={user} password={password} host={host} port={port} sslmode=require"
 
+    @staticmethod
+    def _create_pool(pool_cls, *args, **kwargs):
+        """This is super weird code factorization but it's necessary in order to mock
+        out the connection pool in testing. We can't mock ThreadedConnectionPool
+        directly since it's not imported at the module level.
+        """
+        return pool_cls(*args, **kwargs)
+
     def _get_pool(self, db_name: str):
         pool = self._pools.get(db_name)
         if pool is not None:
@@ -103,7 +111,8 @@ class _BitV2:
             raise exc
 
         conn_string = self._get_conn_string(db_name)
-        pool = ThreadedConnectionPool(
+        pool = self._create_pool(
+            ThreadedConnectionPool,
             self._min_conn,
             self._max_conn,
             conn_string,
