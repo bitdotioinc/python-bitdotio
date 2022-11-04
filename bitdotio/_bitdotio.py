@@ -104,7 +104,6 @@ class _BitV2:
 
         try:
             # Threadsafe by default
-            # TODO: do we care about supporting SimpleConnectionPool?
             from psycopg2.pool import ThreadedConnectionPool
         except ImportError as exc:
             _print_psycopg2_message()
