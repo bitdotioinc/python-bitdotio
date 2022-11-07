@@ -3,6 +3,15 @@ import click
 import sys
 import json
 
+from bitdotio import __version__, bitdotio
+
+
+USER_AGENT = f"python-bitdotio-cli/{__version__}"
+
+
+def printj(obj):
+    print(json.dumps(obj))
+
 
 # Allows overriding the required `-k` when subcommands have `--help`
 # From https://stackoverflow.com/questions/55818737/python-click-application-required-parameters-have-precedence-over-sub-command-he
@@ -28,33 +37,45 @@ class IgnoreRequiredWithHelp(click.Group):
     required=True,
     help="Your bit.io API key, available when you click the connect button in bit.io",
 )
-@click.option(
-    "-v",
-    "--verbose",
-    default=False,
-    is_flag=True,
-    show_default=True,
-    help="Verbose output",
-)
 @click.pass_context
-def bitio(ctx, key, verbose):
-    raise NotImplementedError
+def bitio(ctx, key):
+    if key:
+        b = bitdotio(key)
+        b._api_client.set_header("User-Agent", USER_AGENT)
+        ctx.obj = b
 
 
-#  python3 bit.py -k your_api_key_here query -q "SELECT *  FROM \"a/demo_repo\".\"atl_home_sales\""
-# echo  "SELECT *  FROM \"a/demo_repo\".\"atl_home_sales\"" | python3 bit.py -k your_api_key_here query -qf -
+# bit -k <api-key> query -d <db-name> -q "SELECT 1"
 @bitio.command()
+@click.option("-d", "--database", required=True, help="Name of the database to query")
 @click.option("-q", "--query", required=False, help="The SQL to run.")
 @click.option(
     "-qf",
     "--query_file",
     required=False,
-    help="A SQL file run, containing a single query. Use - for stdin.",
+    help="A SQL file to run, containing a single query. Use - for stdin.",
     type=click.File("r"),
 )
+@click.option(
+    "-o",
+    "--objects",
+    is_flag=True,
+    help="Return data as an array of JSON objects instead of row arrays",
+)
 @click.pass_obj
-def query(b, query, query_file):
-    raise NotImplementedError
+def query(b, database, query, query_file, objects):
+    if query:
+        query_string = query
+    elif query_file:
+        with query_file:
+            query_string = query_file.read()
+    else:
+        raise click.UsageError("One of --query or --query_file is required")
+
+    if objects:
+        printj(b.query(database, query_string, data_format="objects"))
+    else:
+        printj(b.query(database, query_string))
 
 
 @bitio.group()
