@@ -21,7 +21,7 @@ class TestConnect(unittest.TestCase):
     @patch("bitdotio._bitdotio._BitV2._create_pool")
     def test_connect(self, mock_create_pool: Mock) -> None:
         db_1, db_2 = "my/db1", "my/db2"
-        with self.b.connect(db_1):
+        with self.b.pooled_connection(db_1):
             pass
 
         # get/put should be called and there should be one pool after connecting once
@@ -31,7 +31,7 @@ class TestConnect(unittest.TestCase):
 
         mock_create_pool.return_value.getconn.reset_mock()
         mock_create_pool.return_value.putconn.reset_mock()
-        with self.b.connect(db_1):
+        with self.b.pooled_connection(db_1):
             pass
 
         # get/put should be called and there should be one pool after connecting to the
@@ -42,7 +42,7 @@ class TestConnect(unittest.TestCase):
 
         mock_create_pool.return_value.getconn.reset_mock()
         mock_create_pool.return_value.putconn.reset_mock()
-        with self.b.connect(db_2):
+        with self.b.pooled_connection(db_2):
             pass
 
         # get/put should be called and there should be two pools after connecting to
@@ -54,7 +54,7 @@ class TestConnect(unittest.TestCase):
     @patch("bitdotio._bitdotio._BitV2._create_pool")
     def test_cursor(self, mock_create_pool: Mock) -> None:
         db_1, db_2 = "my/db1", "my/db2"
-        with self.b.cursor(db_1):
+        with self.b.pooled_cursor(db_1):
             pass
 
         # get/put should be called and there should be one pool after connecting once
@@ -64,7 +64,7 @@ class TestConnect(unittest.TestCase):
 
         mock_create_pool.return_value.getconn.reset_mock()
         mock_create_pool.return_value.putconn.reset_mock()
-        with self.b.cursor(db_1):
+        with self.b.pooled_cursor(db_1):
             pass
 
         # get/put should be called and there should be one pool after connecting to the
@@ -75,7 +75,7 @@ class TestConnect(unittest.TestCase):
 
         mock_create_pool.return_value.getconn.reset_mock()
         mock_create_pool.return_value.putconn.reset_mock()
-        with self.b.cursor(db_2):
+        with self.b.pooled_cursor(db_2):
             pass
 
         # get/put should be called and there should be two pools after connecting to

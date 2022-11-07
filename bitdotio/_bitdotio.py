@@ -127,7 +127,7 @@ class _BitV2:
         return conn
 
     @contextmanager
-    def connect(self, db_name: str):
+    def pooled_connection(self, db_name: str):
         pool, conn = None, None
         try:
             pool = self._get_pool(db_name)
@@ -138,8 +138,8 @@ class _BitV2:
                 pool.putconn(conn)
 
     @contextmanager
-    def cursor(self, db_name: str):
-        with self.connect(db_name) as conn:
+    def pooled_cursor(self, db_name: str):
+        with self.pooled_connection(db_name) as conn:
             with conn.cursor() as cursor:
                 yield cursor
 
