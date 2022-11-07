@@ -3,6 +3,8 @@ from urllib.parse import urljoin
 
 from requests import Response, Session
 
+from bitdotio import __version__
+
 
 class ApiClient:
 
@@ -18,6 +20,7 @@ class ApiClient:
                 "Accept": "application/json",
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {self._access_token}",
+                "User-Agent": f"python-bitdotio-sdk/{__version__}"
             }
         )
 
@@ -38,3 +41,6 @@ class ApiClient:
 
     def delete(self, url: str, **kwargs: t.Any) -> Response:
         return self.request("DELETE", url, **kwargs)
+
+    def set_header(self, header: str, value: str) -> None:
+        self._session.headers.update({header: value})
