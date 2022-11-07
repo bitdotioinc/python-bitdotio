@@ -19,7 +19,7 @@ class IgnoreRequiredWithHelp(click.Group):
     def parse_args(self, ctx, args):
         try:
             return super(IgnoreRequiredWithHelp, self).parse_args(ctx, args)
-        except click.MissingParameter as exc:
+        except click.MissingParameter:
             if "--help" not in args:
                 raise
             # remove the required params so that help can display
@@ -80,116 +80,59 @@ def query(b, database, query, query_file, objects):
 
 @bitio.group()
 @click.pass_obj
-def repo(b):
+def db(b):
     pass
 
 
-# python3 bit.py -k your_api_key_here repo create -n foobarsadsasds -d "foo bar baz" -p False
-@repo.command()
-@click.option("-r", "--repo_name", required=True, help="The repo name.")
-@click.option("-d", "--description", default="", help="The repo description.")
-@click.option(
-    "-p",
-    "--is_private",
-    show_default=True,
-    default=True,
-    help="Is this repo private or not.",
-)
-@click.pass_obj
-def create(b, repo_name, description, is_private):
-    raise NotImplementedError
-
-
-@repo.command()
+@db.command()
 @click.pass_obj
 def list(b):
     raise NotImplementedError
 
 
-# bit.py -k your_api_key_here repo retrieve -n demo_repo
-@repo.command()
-@click.option("-r", "--repo_name", required=True, help="The repo name.")
-@click.pass_obj
-def retrieve(b, repo_name):
-    raise NotImplementedError
-
-
-# bit.py -k your_api_key_here repo destroy -n demo_repo
-@repo.command()
-@click.option("-n", "--name", required=True, help="The repo name.")
+@db.command()
+@click.option("-n", "--name", required=True, help="The database name")
 @click.option(
-    "-y",
-    "--yes",
-    default=False,
-    is_flag=True,
+    "-p",
+    "--is_private",
     show_default=True,
-    help="Skip the confirmation",
+    default=True,
+    help="Whether or not the database is set to private",
 )
 @click.pass_obj
-def destroy(b, name, yes):
+def create(b, name):
     raise NotImplementedError
 
 
-@bitio.group(name="import")
+@db.command()
+@click.option("-d", "--database", required=True, help="Name of the database to show")
 @click.pass_obj
-def import_stub(b):
+def info(b, database):
     raise NotImplementedError
 
 
-@import_stub.command()
-@click.option("-i", "--job_id", required=True, help="The importer job id.")
-@click.pass_obj
-def status(b, job_id):
-    raise NotImplementedError
-
-
-@import_stub.command()
-@click.option("-r", "--repo_name", required=True, help="The repo name.")
-@click.option("-t", "--table_name", required=True, help="The table name.")
+@db.command()
+@click.option("-d", "--database", required=True, help="Name of the database to show")
 @click.option(
-    "--data",
-    required=True,
-    hidden=True,
-    type=click.File("r"),
-    default="-",
-    help="The json data",
+    "-n", "--name", required=False, default=None, help="New name for the database"
 )
-@click.pass_obj
-def json_data(b, repo_name, table_name, data):
-    raise NotImplementedError
-
-
-@import_stub.command()
-@click.option("-r", "--repo_name", required=True, help="The repo name.")
-@click.option("-t", "--table_name", required=False, help="The table name.")
-@click.option("-u", "--url", required=True, help="The url to import.")
-@click.pass_obj
-def url(b, repo_name, table_name, url):
-    raise NotImplementedError
-
-
-@import_stub.command()
-@click.option("-r", "--repo_name", required=True, help="The repo name.")
-@click.option("-t", "--table_name", required=False, help="The table name.")
 @click.option(
-    "-f",
-    "--file_name",
-    required=True,
-    type=click.File("r"),
-    default="-",
-    help="The file to import; defaults to stdin.",
+    "-p",
+    "--is_private",
+    required=False,
+    default=None,
+    help="Whether or not the database is set to private",
 )
 @click.pass_obj
-def file(b, repo_name, table_name, file_name):
+def update(b, database, name, is_private):
     raise NotImplementedError
 
 
-def print_json_model(model):
-    print(json.dumps(model.to_dict(), indent=4))
-
-
-def print_json_model_list(models):
-    print(json.dumps([x.to_dict() for x in models], indent=4))
+@db.command()
+@click.option("-d", "--database", required=True, help="Name of the database to show")
+@click.pass_obj
+def delete(b, database):
+    raise NotImplementedError
 
 
 def main():
