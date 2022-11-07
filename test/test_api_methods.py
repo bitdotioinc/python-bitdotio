@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 from bitdotio import bitdotio
-from bitdotio.bitdotio import ApiError
+from bitdotio._bitdotio import ApiError
 
 
 class TestApiMethods(unittest.TestCase):

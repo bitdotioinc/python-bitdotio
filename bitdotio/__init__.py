@@ -2,4 +2,4 @@
 
 __version__ = "1.0.0"
 
-from bitdotio.bitdotio import bitdotio
+from bitdotio._bitdotio import bitdotio
