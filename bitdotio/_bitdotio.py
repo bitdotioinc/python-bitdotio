@@ -3,17 +3,11 @@ import functools
 import sys
 import typing as t
 from contextlib import contextmanager
-from warnings import warn
 
 from requests import Response
 
 from bitdotio.api_client import ApiClient
-from bitdotio.utils import (
-    deprecated,
-    validate_database_name,
-    validate_min_max_conn,
-    validate_token,
-)
+from bitdotio.utils import validate_database_name, validate_min_max_conn, validate_token
 
 API_VERSION = "v2beta"
 
@@ -120,9 +114,6 @@ class _BitV2:
         self._pools[db_name] = pool
         return pool
 
-    @deprecated(
-        "The get_connection() interface is deprecated and will be removed in a future vestion of the bit.io python SDK. Please use the connect() and cursor() interfaces."
-    )
     def get_connection(self, db_name):
         try:
             import psycopg2
