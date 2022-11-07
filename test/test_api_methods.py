@@ -12,6 +12,49 @@ class TestApiMethods(unittest.TestCase):
         self.b = bitdotio(self.token)
 
     @patch("bitdotio.api_client.ApiClient.request")
+    def test_query_ok(self, mock_request: Mock) -> None:
+        db_name = "my/db"
+        query_str = "SELECT 1"
+        data_format = "objects"
+        expected = {"foo": "bar"}
+        mock_request.return_value.ok = True
+        mock_request.return_value.status_code = 200
+        mock_request.return_value.json.return_value = expected
+
+        result = self.b.query("my/db", "SELECT 1")
+
+        # Test without data_format
+        self.assertEqual(result, expected)
+        mock_request.assert_called_once_with(
+            "POST",
+            "/query",
+            json={"database_name": db_name, "query_string": query_str},
+        )
+
+        mock_request.reset_mock()
+
+        # Test with data_format
+        result = self.b.query("my/db", "SELECT 1", data_format=data_format)
+        self.assertEqual(result, expected)
+        mock_request.assert_called_once_with(
+            "POST",
+            f"/query?data_format={data_format}",
+            json={"database_name": db_name, "query_string": query_str},
+        )
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_query_error(self, mock_request: Mock) -> None:
+        status_code = 400
+        error_data = {"error": "whoops"}
+        mock_request.return_value.ok = False
+        mock_request.return_value.status_code = status_code
+        mock_request.return_value.json.return_value = error_data
+        with self.assertRaises(ApiError) as cm:
+            self.b.query("my/db", "SELECT 1")
+            self.assertEqual(cm.exception.status_code, status_code)
+            self.assertEqual(cm.exception.data, error_data)
+
+    @patch("bitdotio.api_client.ApiClient.request")
     def test_list_databases_ok(self, mock_request: Mock) -> None:
         expected = ["foo", "bar"]
         mock_request.return_value.ok = True

@@ -142,6 +142,16 @@ class _BitV2:
             with conn.cursor() as cursor:
                 yield cursor
 
+    @api_method()
+    def query(self, db_name: str, query_str: str, data_format: t.Optional[str] = None):
+        url = f"/query"
+        if data_format is not None:
+            url += f"?data_format={data_format}"
+
+        request_body = {"database_name": db_name, "query_string": query_str}
+
+        return self._api_client.post(url, json=request_body)
+
     @api_method(returning="databases")
     def list_databases(self):
         return self._api_client.get("/db/")
