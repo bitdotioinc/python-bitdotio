@@ -18,7 +18,7 @@ VERSION = "2.0.0b"
 # prerequisite: setuptools
 # http://pypi.python.org/pypi/setuptools
 
-REQUIRES = ["urllib3 >= 1.15", "six >= 1.10", "certifi", "python-dateutil", "click >= 8.0.1"]
+REQUIRES = ["requests >= 2.28.1", "click >= 8.0.1"]
 
 EXTRAS = {
     "psycopg2": [
