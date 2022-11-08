@@ -25,31 +25,26 @@ class TestBitHelp(unittest.TestCase):
         bitio.params[0].required = True
         return super().tearDown()
 
-    @unittest.skip("TODO")
     def test_help(self):
         runner = CliRunner()
         result = runner.invoke(bitio, ["--help", "bitio"])
-        assert result.exit_code == 0
+        self.assertEqual(result.exit_code, 0)
 
-    @unittest.skip("TODO")
     def test_no_args(self):
         """Test that bit with no arguments returns same as with --help"""
         runner = CliRunner()
         res1 = runner.invoke(bitio)
         res2 = runner.invoke(bitio, ["--help", "bitio"])
-        assert res1.output == res2.output
+        self.assertEqual(res1.output, res2.output)
 
-    @unittest.skip("TODO")
     def test_help_no_key(self):
         """Test that help for query, import, repo commands are accessible without key"""
         runner = CliRunner()
         query_result = runner.invoke(bitio, ["query", "--help", "bitio"])
-        import_result = runner.invoke(bitio, ["import", "--help", "bitio"])
-        repo_result = runner.invoke(bitio, ["repo", "--help", "bitio"])
+        db_result = runner.invoke(bitio, ["db", "--help", "bitio"])
 
-        assert query_result.exit_code == 0
-        assert import_result.exit_code == 0
-        assert repo_result.exit_code == 0
+        self.assertEqual(query_result.exit_code, 0)
+        self.assertEqual(db_result.exit_code, 0)
 
 
 if __name__ == "__main__":
