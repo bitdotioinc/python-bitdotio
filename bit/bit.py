@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import click
 import sys
 import json
@@ -18,31 +19,35 @@ def printj(obj):
 class IgnoreRequiredWithHelp(click.Group):
     def parse_args(self, ctx, args):
         try:
-            return super(IgnoreRequiredWithHelp, self).parse_args(ctx, args)
+            return super().parse_args(ctx, args)
         except click.MissingParameter:
             if "--help" not in args:
                 raise
-            # remove the required params so that help can display
-            for param in self.params:
-                if param.name == "key":
-                    param.required = False
-                    break
-            return super(IgnoreRequiredWithHelp, self).parse_args(ctx, args)
+
+            # HACK: if just doing --help, pass in a phony key that passes regex
+            # validation.
+            return super().parse_args(ctx, ["-k", "v2_help", "--help"])
 
 
 @click.group(cls=IgnoreRequiredWithHelp)
 @click.option(
     "-k",
     "--key",
-    required=True,
+    required=False,
     help="Your bit.io API key, available when you click the connect button in bit.io",
 )
 @click.pass_context
 def bitio(ctx, key):
-    if key:
-        b = bitdotio(key)
-        b._api_client.set_header("User-Agent", USER_AGENT)
-        ctx.obj = b
+    if key is None:
+        key = os.environ.get("BITIO_KEY")
+        if key is None:
+            raise click.MissingParameter(
+                "Your bit.io key must be set either using the -k/--key argument or as the environment variable BITIO_KEY"
+            )
+
+    b = bitdotio(key)
+    b._api_client.set_header("User-Agent", USER_AGENT)
+    ctx.obj = b
 
 
 # bit -k <api-key> query -d <db-name> -q "SELECT 1"

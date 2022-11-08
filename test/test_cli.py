@@ -49,6 +49,17 @@ class TestCLI(unittest.TestCase):
         self.assertEqual(query_result.exit_code, 0)
         self.assertEqual(db_result.exit_code, 0)
 
+    @patch("bitdotio._bitdotio._BitV2.get_database", return_value={})
+    def test_bitio_key_env_var(self, mock_get_database: Mock):
+        # Check that we can omit -k/--key and use BITIO_KEY env var instead. Use db
+        # info command for this purpose since it's the simplest.
+        os.environ["BITIO_KEY"] = self.token
+        cmd = ["db", "info", "-d", "my/db"]
+        result = self.runner.invoke(bitio, cmd)
+        self.assertEqual(result.exit_code, 0)
+        mock_get_database.assert_called_once()
+        del os.environ["BITIO_KEY"]
+
     @patch("bitdotio._bitdotio._BitV2.query", return_value={})
     def test_query_ok_query_str(self, mock_query: Mock):
         cmd = self.cmd("query", "-d", "my/db", "-q", "select 1")
