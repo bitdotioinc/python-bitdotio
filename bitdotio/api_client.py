@@ -3,7 +3,7 @@ from urllib.parse import urljoin
 
 from requests import Response, Session
 
-from bitdotio import __version__
+from bitdotio._version import __version__
 
 
 class ApiClient:
