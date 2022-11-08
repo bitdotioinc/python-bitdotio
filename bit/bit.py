@@ -87,7 +87,7 @@ def db(b):
 @db.command()
 @click.pass_obj
 def list(b):
-    raise NotImplementedError
+    printj(b.list_databases())
 
 
 @db.command()
@@ -100,15 +100,15 @@ def list(b):
     help="Whether or not the database is set to private",
 )
 @click.pass_obj
-def create(b, name):
-    raise NotImplementedError
+def create(b, name, is_private):
+    printj(b.create_database(name, is_private=is_private))
 
 
 @db.command()
 @click.option("-d", "--database", required=True, help="Name of the database to show")
 @click.pass_obj
 def info(b, database):
-    raise NotImplementedError
+    printj(b.get_database(database))
 
 
 @db.command()
@@ -125,14 +125,15 @@ def info(b, database):
 )
 @click.pass_obj
 def update(b, database, name, is_private):
-    raise NotImplementedError
+    printj(b.update_database(database, name=name, is_private=is_private))
 
 
 @db.command()
 @click.option("-d", "--database", required=True, help="Name of the database to show")
 @click.pass_obj
 def delete(b, database):
-    raise NotImplementedError
+    b.delete_database(database)
+    print(f"Successfully deleted database: {database}")
 
 
 def main():
