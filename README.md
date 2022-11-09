@@ -116,7 +116,7 @@ helpful context mangers for acquiring connections from a pool:
   or update.
 
 There may be situations in which a self-managed, unpooled connection is needed. For
-example, if the client needs persist state onto the connection's database session using
+example, if the client needs to persist state onto the connection's database session using
 the `SET` command. For such situations, the SDK object provides the `get_connection`
 method.
 
