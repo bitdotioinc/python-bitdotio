@@ -170,7 +170,7 @@ BITIO_KEY=<your key> bit db list
 This is the same as:
 
 ```sh
-bit -k <your-key> repo list
+bit -k <your-key> db list
 ```
 
 #### Run a query
