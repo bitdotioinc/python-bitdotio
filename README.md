@@ -1,7 +1,5 @@
 # bit.io Python SDK & Command Line Tool
 
-_TODO_: exposition
-
 ## Installation
 
 In order to support different environments, we have a few ways to install the bitdotio
@@ -26,16 +24,19 @@ pip install 'bitdotio[psycopg2-binary]'
 
 ## Usage
 
-Once you have `bitdotio` installed all you need is your API key to start working with bit.io.
-
-You can get your API key by logging into bit.io and opening [the "Connect" tab](https://docs.bit.io/docs/your-connection-credentials) on a database page.
-
 The `bitdotio` module consists of a `bitdotio` SDK object which provides helpful
 utilities for creating and managing pre-configured connections to bit.io databases
 via `psycopg2`, as well as easy methods for accessing the functionality exposed by the
 [bit.io developer API](https://docs.bit.io/reference)
 
+Once you have `bitdotio` installed all you need is your API key to start working with bit.io.
+
+You can get your API key by logging into bit.io and opening [the "Connect" tab](https://docs.bit.io/docs/your-connection-credentials) on a database page.
+
 ### Example usage
+
+See API reference at the bottom of this document for a full list of methods provided by
+the SDK.
 
 ```python
 import os
@@ -91,13 +92,93 @@ scripts or serverless backends.
 
 ### Connection pooling and management
 
-_TODO_ Explain when to use `pooled_connection`/`pooled_cursor`/`get_connection`
+The recommended way to obtain a direct connection to a bit.io database is via a
+connection pool. In order to support scaling to zero, bit.io automatically closes idle
+connections after a period of time, and puts databases into a dormant state when there
+are no live connections. If you are designing a long-running application, you should
+make sure that your database access pattern is resilient to connection closures and
+database shutdowns. The best way to do this is via a connection pool. Acquiring
+connections from a connection pool allows connection re-use, and handles reconnects in
+the event that a connection is dropped. The `bitdotio` SDK object internally manages a
+thread-safe connection pool per-database that the caller connects to, and provides two
+helpful context mangers for acquiring connections from a pool:
+- `pooled_connection`: A context manager providing a `psycopg2` connection to the
+  given database acquired from a connection pool. When exiting the context created by
+  this context manager, the connection is returned to the pool if still open, or
+  discarded if closed. It is recommended to use this method when executing multiple
+  transacions, or in situations where explicit transaction management is required.
+- `pooled_cursor`: A context manager providing a `psycopg2` cursor created from a
+  connection acquired from a connection pool. When exiting the context created by this
+  context manager, the cursor's tansaction will be committed, and its connection will be
+  returned to the connection pool. It is recommended to use this method in situations
+  where a single transaction is required without any complex handling logic. For
+  example, performing a sequence of `SELECT` queries, or performing a single insertion
+  or update.
+
+There may be situations in which a self-managed, unpooled connection is needed. For
+example, if the client needs persist state onto the connection's database session using
+the `SET` command. For such situations, the SDK object provides the `get_connection`
+method.
+
+For more information on all of the above, refer to the `psycopg2` documentation on
+[connections](https://www.psycopg.org/docs/connection.html),
+[cursors](https://www.psycopg.org/docs/cursor.html),
+and [pools](https://www.psycopg.org/docs/pool.html).
 
 ### Multiprocessing
 
-_TODO_ Explain that you need a `bitdotio` instance per-proc
+The `bitdotio` SDK object is not safe to share between multiple processes. If you are
+programming in a multiprocess environment, ensure that a `bitdotio` SDK object is
+created per-process, not pre-fork.
 
-## API Reference
+# `bit` CLI
+
+Installing the `bitdotio` module also installs the command line tool `bit` which lets
+you interact with bit.io from scripts or the command line. This is installed next to
+your python binary.
+
+You'll want to grab your API key from your bit.io account - to get the key, log into to
+bit.io, go to any database, and retrieve it from the "Connect" tab.
+
+```
+Usage: bit [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  -k, --key TEXT  Your bit.io API key, available when you click the connect
+                  button in bit.io
+  --help          Show this message and exit.
+
+Commands:
+  db
+  query
+```
+
+All of the commands return JSON.
+
+You can supply your API key either via the `-k/--key` argument, or by setting the it to
+the `BITIO_KEY` environment variable. The latter option keeps the key from showing up
+in, eg, a `ps` command, and allows secret injection for systems like Kubernetes.
+
+
+### Examples
+
+#### List databases
+```sh
+BITIO_KEY=<your key> bit db list
+```
+
+This is the same as:
+
+```sh
+bit -k <your-key> repo list
+```
+
+#### Run a query
+```sh
+bit -k <your-key> query -d "username/dbname" -q "SELECT * FROM my_table"
+```
+
+# API Reference
 
 #### `bitdotio(access_token, min_conn=0, max_conn=100)`
 
@@ -248,6 +329,3 @@ _Returns_:
 None.
 
 <hr>
-
-
-# `bit` CLI
