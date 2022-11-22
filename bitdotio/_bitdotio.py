@@ -7,7 +7,12 @@ from contextlib import contextmanager
 from requests import Response
 
 from bitdotio.api_client import ApiClient
-from bitdotio.utils import validate_database_name, validate_min_max_conn, validate_token
+from bitdotio.utils import (
+    prune_body,
+    validate_database_name,
+    validate_min_max_conn,
+    validate_token,
+)
 
 API_VERSION = "v2beta"
 
@@ -183,15 +188,13 @@ class _BitV2:
         storage_limit_bytes: t.Optional[int] = None,
     ):
         validate_database_name(db_name)
-        request_body = {
-            k: v
-            for k, v in {
+        request_body = prune_body(
+            {
                 "name": name,
                 "is_private": is_private,
                 "storage_limit_bytes": storage_limit_bytes,
-            }.items()
-            if v is not None
-        }
+            }
+        )
 
         return self._api_client.patch(f"/db/{db_name}", json=request_body)
 
@@ -214,16 +217,14 @@ class _BitV2:
         if bool(file) == bool(file_url):
             raise ValueError("Must provide file XOR file_url")
 
-        data = {
-            k: v
-            for k, v in {
+        data = prune_body(
+            {
                 "table_name": table_name,
                 "schema_name": schema_name,
                 "infer_header": infer_header,
                 "file_url": file_url,
-            }.items()
-            if v is not None
-        }
+            }
+        )
 
         files = {}
         if file is not None:
