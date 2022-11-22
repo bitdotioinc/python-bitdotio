@@ -200,6 +200,41 @@ class _BitV2:
         validate_database_name(db_name)
         return self._api_client.delete(f"/db/{db_name}")
 
+    @api_method()
+    def create_import_job(
+        self,
+        db_name: str,
+        table_name: str,
+        schema_name: t.Optional[str] = None,
+        infer_header: t.Optional[t.Literal["auto", "first_row", "no_header"]] = None,
+        file: t.Optional[t.IO] = None,
+        file_url: t.Optional[str] = None,
+    ):
+        validate_database_name(db_name)
+        if bool(file) == bool(file_url):
+            raise ValueError("Must provide file XOR file_url")
+
+        data = {
+            k: v
+            for k, v in {
+                "table_name": table_name,
+                "schema_name": schema_name,
+                "infer_header": infer_header,
+                "file_url": file_url,
+            }.items()
+            if v is not None
+        }
+
+        files = {}
+        if file is not None:
+            files["file"] = file
+
+        return self._api_client.post(f"/db/{db_name}/import/", data=data, files=files)
+
+    @api_method()
+    def get_import_job(self, import_id: str):
+        return self._api_client.get(f"/import/{import_id}")
+
 
 def _print_psycopg2_message():
     print(
