@@ -40,6 +40,7 @@ the SDK.
 
 ```python
 import os
+import time
 
 from bitdotio import bitdotio
 
@@ -63,6 +64,27 @@ with b.pooled_cursor(db_name) as cur:
 
 # Execute a query via the HTTP API
 print(b.query(db_name, "SELECT * FROM person", data_format="objects"))
+
+# Create a new table "city" by importing a file.
+with open("city.csv", "rb") as f:
+    job_status = b.create_import_job("my-username/my-db", "city", file=f)
+    # Poll the status of the job until done
+    while True:
+        job_status = b.get_import_job(job_status["id"])
+        if job_status["state"] == "DONE":
+            break
+        if job_status["state"] == "FAILED":
+            # If the import failed for whatever reason, raise an exception with the
+            # error info.
+            error_id = job_status["error_id"]
+            error_type = job_status["error_type"]
+            error_details = job_status["error_details"]
+            raise Exception(
+                f"Import failed. error_id={error_id} error_type={error_type}, error_details={error_details}"
+            )
+
+        # Wait a little before trying again
+        time.sleep(0.2)
 ```
 
 ### Making queries
@@ -124,6 +146,34 @@ For more information on all of the above, refer to the `psycopg2` documentation 
 [connections](https://www.psycopg.org/docs/connection.html),
 [cursors](https://www.psycopg.org/docs/cursor.html),
 and [pools](https://www.psycopg.org/docs/pool.html).
+
+### Data imports and exports
+
+The `bitdotio` SDK object provides helper methods to facilitate importing and exporting
+data from your bit.io database.
+
+To import data into a table on your bit.io database from a file locally or on the web
+you can use the `create_import_job` method. To export data from a query or a table in
+your bit.io database you can use the `create_export_job` method.
+
+These methods have somewhat symmetrical workflows in that they both kick off jobs on
+the bit.io backend which execute asynchronously, and have companion methods
+(`get_import_job`, and `get_export_job`) to check on the status of a running job.
+
+At a high level, the procedure for doing a data import looks like:
+1. Call `create_import_job` and get back the job status
+2. Use the job status info to poll `get_import_job` until the job status is reported
+   as `DONE` or `FAILED`
+3. If `DONE`, the data has been successfully imported and your table is ready to query
+4. If `FAILED`, the job status object will contain metadata describing what went wrong.
+
+Similarly, a data export looks like:
+1. Call `create_export_job` and get back the job status
+2. Use the job status info to poll `get_export_job` until the job status is reported
+   as `DONE` or `FAILED`
+3. If `DONE`, the exported data will be available to download at the `download_url`
+   included in the job status info.
+4. If `FAILED`, the job status object will contain metadata describing what went wrong.
 
 ### Multiprocessing
 
@@ -397,7 +447,9 @@ A dict describing the status of the export job. The dict contains the fields `id
 `status_url`. The value of `id` can be passed to `get_export_job` to get the updated
 status of the export job. `status_url` can also be requested directly to get the same.
 Also included is the `state` field, which indicates the current status of the job.
-Possible values of `state` are `RECEIVED`, `PROCESSING`, `DONE`, and `FAILED`.
+Possible values of `state` are `RECEIVED`, `PROCESSING`, `DONE`, and `FAILED`. When
+the status of the job reaches `DONE`, the field `download_url` will have a non-null
+value, and the exported file can be downloaded from it.
 
 <hr>
 
