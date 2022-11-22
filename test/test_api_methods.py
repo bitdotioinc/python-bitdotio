@@ -268,3 +268,111 @@ class TestImports(ApiTestCase):
             self.b.get_import_job(str(uuid.uuid4()))
             self.assertEqual(cm.exception.status_code, status_code)
             self.assertEqual(cm.exception.data, error_data)
+
+
+class TestExports(ApiTestCase):
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_create_export_job_query_ok(self, mock_request: Mock) -> None:
+        mock_request.return_value.ok = True
+        mock_request.return_value.json.return_value = {"foo": "bar"}
+        self.b.create_export_job("my/db", query_string="select 1", file_name="foo.csv")
+        mock_request.assert_called_once_with(
+            "POST",
+            "/db/my/db/export/",
+            json={
+                "query_string": "select 1",
+                "file_name": "foo.csv",
+                "export_format": "csv",
+            },
+        )
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_create_export_job_table_ok(self, mock_request: Mock) -> None:
+        mock_request.return_value.ok = True
+        mock_request.return_value.json.return_value = {"foo": "bar"}
+        self.b.create_export_job(
+            "my/db",
+            table_name="table",
+            schema_name="schema",
+            export_format="parquet",
+        )
+        mock_request.assert_called_once_with(
+            "POST",
+            "/db/my/db/export/",
+            json={
+                "table_name": "table",
+                "schema_name": "schema",
+                "export_format": "parquet",
+            },
+        )
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_create_export_job_invalid_db_name(self, _: Mock) -> None:
+        with self.assertRaisesRegex(ValueError, "Invalid database name"):
+            self.b.create_export_job("mydb", query_string="select 1")
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_create_export_job_missing_query_and_table(self, _: Mock) -> None:
+        with self.assertRaisesRegex(
+            ValueError, "Must provide query_string XOR table and schema name"
+        ):
+            self.b.create_export_job("my/db")
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_create_export_job_both_query_and_table(self, _: Mock) -> None:
+        with self.assertRaisesRegex(
+            ValueError, "Must provide query_string XOR table and schema name"
+        ):
+            self.b.create_export_job(
+                "my/db",
+                query_string="select 1",
+                table_name="table",
+                schema_name="schema",
+            )
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_create_export_job_missing_schema(self, _: Mock) -> None:
+        with self.assertRaisesRegex(
+            ValueError, "Must provide query_string XOR table and schema name"
+        ):
+            self.b.create_export_job("my/db", table_name="table")
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_create_export_job_missing_table(self, _: Mock) -> None:
+        with self.assertRaisesRegex(
+            ValueError, "Must provide query_string XOR table and schema name"
+        ):
+            self.b.create_export_job("my/db", schema_name="schema")
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_create_export_job_error(self, mock_request: Mock) -> None:
+        status_code = 400
+        error_data = {"error": "whoops"}
+        mock_request.return_value.ok = False
+        mock_request.return_value.status_code = status_code
+        mock_request.return_value.json.return_value = error_data
+        with self.assertRaises(ApiError) as cm:
+            self.b.create_export_job("my/db", query_string="q", export_format="xls")
+            self.assertEqual(cm.exception.status_code, status_code)
+            self.assertEqual(cm.exception.data, error_data)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_get_export_job_ok(self, mock_request: Mock) -> None:
+        expected = {"foo", "bar"}
+        mock_request.return_value.ok = True
+        mock_request.return_value.status_code = 201
+        mock_request.return_value.json.return_value = expected
+        result = self.b.get_export_job(str(uuid.uuid4()))
+        self.assertEqual(result, expected)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_get_export_job_error(self, mock_request: Mock) -> None:
+        status_code = 400
+        error_data = {"error": "whoops"}
+        mock_request.return_value.ok = False
+        mock_request.return_value.status_code = status_code
+        mock_request.return_value.json.return_value = error_data
+        with self.assertRaises(ApiError) as cm:
+            self.b.get_export_job(str(uuid.uuid4()))
+            self.assertEqual(cm.exception.status_code, status_code)
+            self.assertEqual(cm.exception.data, error_data)

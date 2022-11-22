@@ -236,6 +236,36 @@ class _BitV2:
     def get_import_job(self, import_id: str):
         return self._api_client.get(f"/import/{import_id}")
 
+    @api_method()
+    def create_export_job(
+        self,
+        db_name: str,
+        query_string: t.Optional[str] = None,
+        table_name: t.Optional[str] = None,
+        schema_name: t.Optional[str] = None,
+        file_name: t.Optional[str] = None,
+        export_format: t.Literal["csv", "json", "xls", "parquet"] = "csv",
+    ):
+        validate_database_name(db_name)
+        if bool(query_string) == (bool(table_name) and bool(schema_name)):
+            raise ValueError("Must provide query_string XOR table and schema name")
+
+        request_body = prune_body(
+            {
+                "query_string": query_string,
+                "table_name": table_name,
+                "schema_name": schema_name,
+                "file_name": file_name,
+                "export_format": export_format,
+            }
+        )
+
+        return self._api_client.post(f"/db/{db_name}/export/", json=request_body)
+
+    @api_method()
+    def get_export_job(self, export_id: str):
+        return self._api_client.get(f"/export/{export_id}")
+
 
 def _print_psycopg2_message():
     print(
