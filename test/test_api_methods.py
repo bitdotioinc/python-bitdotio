@@ -307,6 +307,25 @@ class TestExports(ApiTestCase):
         )
 
     @patch("bitdotio.api_client.ApiClient.request")
+    def test_create_export_job_table_no_schema_ok(self, mock_request: Mock) -> None:
+        mock_request.return_value.ok = True
+        mock_request.return_value.json.return_value = {"foo": "bar"}
+        self.b.create_export_job(
+            "my/db",
+            table_name="table",
+            export_format="xls",
+        )
+        mock_request.assert_called_once_with(
+            "POST",
+            "/db/my/db/export/",
+            json={
+                "table_name": "table",
+                "schema_name": "public",
+                "export_format": "xls",
+            },
+        )
+
+    @patch("bitdotio.api_client.ApiClient.request")
     def test_create_export_job_invalid_db_name(self, _: Mock) -> None:
         with self.assertRaisesRegex(ValueError, "Invalid database name"):
             self.b.create_export_job("mydb", query_string="select 1")
@@ -314,14 +333,14 @@ class TestExports(ApiTestCase):
     @patch("bitdotio.api_client.ApiClient.request")
     def test_create_export_job_missing_query_and_table(self, _: Mock) -> None:
         with self.assertRaisesRegex(
-            ValueError, "Must provide query_string XOR table and schema name"
+            ValueError, "Must provide query_string XOR table_name"
         ):
             self.b.create_export_job("my/db")
 
     @patch("bitdotio.api_client.ApiClient.request")
     def test_create_export_job_both_query_and_table(self, _: Mock) -> None:
         with self.assertRaisesRegex(
-            ValueError, "Must provide query_string XOR table and schema name"
+            ValueError, "Must provide query_string XOR table_name"
         ):
             self.b.create_export_job(
                 "my/db",
@@ -331,16 +350,9 @@ class TestExports(ApiTestCase):
             )
 
     @patch("bitdotio.api_client.ApiClient.request")
-    def test_create_export_job_missing_schema(self, _: Mock) -> None:
-        with self.assertRaisesRegex(
-            ValueError, "Must provide query_string XOR table and schema name"
-        ):
-            self.b.create_export_job("my/db", table_name="table")
-
-    @patch("bitdotio.api_client.ApiClient.request")
     def test_create_export_job_missing_table(self, _: Mock) -> None:
         with self.assertRaisesRegex(
-            ValueError, "Must provide query_string XOR table and schema name"
+            ValueError, "Must provide query_string XOR table_name"
         ):
             self.b.create_export_job("my/db", schema_name="schema")
 

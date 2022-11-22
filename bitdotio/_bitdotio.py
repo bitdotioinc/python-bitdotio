@@ -247,8 +247,13 @@ class _BitV2:
         export_format: t.Literal["csv", "json", "xls", "parquet"] = "csv",
     ):
         validate_database_name(db_name)
-        if bool(query_string) == (bool(table_name) and bool(schema_name)):
-            raise ValueError("Must provide query_string XOR table and schema name")
+        if bool(query_string) == bool(table_name):
+            raise ValueError("Must provide query_string XOR table_name")
+
+        # Explicit schema name is required by the API, but we can default to public
+        # here if table_name is given.
+        if table_name and not schema_name:
+            schema_name = "public"
 
         request_body = prune_body(
             {
