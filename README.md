@@ -329,3 +329,88 @@ _Returns_:
 None.
 
 <hr>
+
+#### `bitdotio.create_import_job(db_name, table_name, schema_name=None, infer_header=None, file=None, file_url=None)`
+
+Start a data import job from a file or a URL. Supported filetypes CSV, JSON, XLS/XLSX,
+and SQLite.
+
+_Args_:
+- `db_name (str)`: Name of the database to import data into
+- `table_name (str)`: Name of the table to import data into
+- `schema_name (Optional[str])`: Name schema in which the target table resides. Not
+  required if the table is in the `public` schema.
+- `infer_header (Optional[str])`: If relevant to the given filetype, indicates how the
+  first row of the data should be interpreted. Should be one of `auto`, `first_row`, or
+  `no_header`. If `auto`, we will attempt to determine automatically if there is a
+  header or not. If `first_row`, the first row of the data will be used as the header.
+  If `no_header`, the first row of the data will be interpreted as data.
+- `file (Optional[file-like])`: A file-like object to upload. If this is passed,
+  `file_url` must not be passsed.
+- `file_url (Optional[str])`: A URL to import a file from. The URL should point to a
+  supported filetype on the web. If this is passed, `file` must not be passed.
+
+_Returns_:
+
+A dict describing the status of the import job. The dict contains the fields `id`, and
+`status_url`. The value of `id` can be passed to `get_import_job` to get the updated
+status of the import job. `status_url` can also be requested directly to get the same.
+Also included is the `state` field, which indicates the current status of the job.
+Possible values of `state` are `RECEIVED`, `PROCESSING`, `DONE`, and `FAILED`.
+
+<hr>
+
+#### `bitdotio.get_import_job(import_id)`
+
+Retrieves the status and other metadata about a given data import job. See the docs for
+`create_import_job` for more details on import job statuses and metadata fields.
+
+_Args_:
+- `import_id (str)`: The ID of the import job to retrieve info for.
+
+_Returns_:
+
+A dict describing the status and metadata of an import job.
+
+<hr>
+
+#### `bitdotio.create_export_job(db_name, query_string=None, table_name=None, schema_name=None, file_name=None, export_format=None)`
+
+Start a data export job from a query or a full table. Supported export filetypes are
+CSV, JSON, XLS, and Parquet.
+
+_Args_:
+- `db_name (str)`: Name of the database to export data from
+- `query_string (Optional[str])`: A query to export results for. Providing this option
+   will run the query on your database. If this is passed, `table_name` and `schema_name`
+   must not be passed.
+- `table_name (Optional[str])`: Name of the table to export data from. If this is
+  passed, `query_string` must not be passed.
+- `schema_name (Optional[str])`: Name schema in which the exported table resides. Not
+  required if the table is in the `public` schema.
+- `file_name (Optional[str])`: Name of the exported file.
+- `export_format (str)`: File format to export data to. Defaults to `csv`.
+
+_Returns_:
+
+A dict describing the status of the export job. The dict contains the fields `id`, and
+`status_url`. The value of `id` can be passed to `get_export_job` to get the updated
+status of the export job. `status_url` can also be requested directly to get the same.
+Also included is the `state` field, which indicates the current status of the job.
+Possible values of `state` are `RECEIVED`, `PROCESSING`, `DONE`, and `FAILED`.
+
+<hr>
+
+#### `bitdotio.get_export_job(export_id)`
+
+Retrieves the status and other metadata about a given data export job. See the docs for
+`create_export_job` for more details on export job statuses and metadata fields.
+
+_Args_:
+- `export_id (str)`: The ID of the export job to retrieve info for.
+
+_Returns_:
+
+A dict describing the status and metadata of an export job.
+
+<hr>
