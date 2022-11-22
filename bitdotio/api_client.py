@@ -18,7 +18,6 @@ class ApiClient:
         self._session.headers.update(
             {
                 "Accept": "application/json",
-                # "Content-Type": "application/json",
                 "Authorization": f"Bearer {self._access_token}",
                 "User-Agent": f"python-bitdotio-sdk/{__version__}"
             }
