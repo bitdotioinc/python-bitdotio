@@ -7,7 +7,12 @@ from contextlib import contextmanager
 from requests import Response
 
 from bitdotio.api_client import ApiClient
-from bitdotio.utils import validate_database_name, validate_min_max_conn, validate_token
+from bitdotio.utils import (
+    prune_body,
+    validate_database_name,
+    validate_min_max_conn,
+    validate_token,
+)
 
 API_VERSION = "v2beta"
 
@@ -183,15 +188,13 @@ class _BitV2:
         storage_limit_bytes: t.Optional[int] = None,
     ):
         validate_database_name(db_name)
-        request_body = {
-            k: v
-            for k, v in {
+        request_body = prune_body(
+            {
                 "name": name,
                 "is_private": is_private,
                 "storage_limit_bytes": storage_limit_bytes,
-            }.items()
-            if v is not None
-        }
+            }
+        )
 
         return self._api_client.patch(f"/db/{db_name}", json=request_body)
 
@@ -199,6 +202,74 @@ class _BitV2:
     def delete_database(self, db_name: str):
         validate_database_name(db_name)
         return self._api_client.delete(f"/db/{db_name}")
+
+    @api_method()
+    def create_import_job(
+        self,
+        db_name: str,
+        table_name: str,
+        schema_name: t.Optional[str] = None,
+        infer_header: t.Optional[t.Literal["auto", "first_row", "no_header"]] = None,
+        file: t.Optional[t.IO] = None,
+        file_url: t.Optional[str] = None,
+    ):
+        validate_database_name(db_name)
+        if bool(file) == bool(file_url):
+            raise ValueError("Must provide file XOR file_url")
+
+        data = prune_body(
+            {
+                "table_name": table_name,
+                "schema_name": schema_name,
+                "infer_header": infer_header,
+                "file_url": file_url,
+            }
+        )
+
+        files = {}
+        if file is not None:
+            files["file"] = file
+
+        return self._api_client.post(f"/db/{db_name}/import/", data=data, files=files)
+
+    @api_method()
+    def get_import_job(self, import_id: str):
+        return self._api_client.get(f"/import/{import_id}")
+
+    @api_method()
+    def create_export_job(
+        self,
+        db_name: str,
+        query_string: t.Optional[str] = None,
+        table_name: t.Optional[str] = None,
+        schema_name: t.Optional[str] = None,
+        file_name: t.Optional[str] = None,
+        export_format: t.Literal["csv", "json", "xls", "parquet"] = "csv",
+    ):
+        validate_database_name(db_name)
+        if bool(query_string) == bool(table_name):
+            raise ValueError("Must provide query_string XOR table_name")
+
+        # Explicit schema name is required by the API, but we can default to public
+        # here if table_name is given.
+        if table_name and not schema_name:
+            schema_name = "public"
+
+        request_body = prune_body(
+            {
+                "query_string": query_string,
+                "table_name": table_name,
+                "schema_name": schema_name,
+                "file_name": file_name,
+                "export_format": export_format,
+            }
+        )
+
+        return self._api_client.post(f"/db/{db_name}/export/", json=request_body)
+
+    @api_method()
+    def get_export_job(self, export_id: str):
+        return self._api_client.get(f"/export/{export_id}")
 
 
 def _print_psycopg2_message():

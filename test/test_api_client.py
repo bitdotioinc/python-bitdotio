@@ -18,7 +18,6 @@ class TestApiClient(unittest.TestCase):
         self.assertIsNotNone(self.api_client._session)
         headers = self.api_client._session.headers
         self.assertEqual(headers["Accept"], "application/json")
-        self.assertEqual(headers["Content-Type"], "application/json")
         self.assertEqual(headers["Authorization"], f"Bearer {self.token}")
 
     def test_url(self) -> None:
