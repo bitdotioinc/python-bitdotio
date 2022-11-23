@@ -439,7 +439,8 @@ _Args_:
 - `schema_name (Optional[str])`: Name schema in which the exported table resides. Not
   required if the table is in the `public` schema.
 - `file_name (Optional[str])`: Name of the exported file.
-- `export_format (str)`: File format to export data to. Defaults to `csv`.
+- `export_format (str)`: File format to export data to. Accepted values are `csv`,
+  `json`, `xls`, and `parquet`. Defaults to `csv`.
 
 _Returns_:
 
