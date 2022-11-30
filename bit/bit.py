@@ -29,8 +29,8 @@ class IgnoreRequiredWithHelp(click.Group):
             return super().parse_args(ctx, ["-k", "v2_help", "--help"])
 
 
-@click.group(cls=IgnoreRequiredWithHelp)
 @click.version_option(__version__, '-v', '--version', is_flag=True, help="Print bit version and exit")
+@click.group(cls=IgnoreRequiredWithHelp)
 @click.option(
     "-k",
     "--key",
