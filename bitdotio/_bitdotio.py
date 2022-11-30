@@ -236,8 +236,8 @@ class _BitV2:
         if file is not None:
             data = MultipartEncoder(
                 fields={
-                    'file': (table_name, file),
                     **data,
+                    'file': (table_name, file),
                 }
             )
             headers["Content-Type"] = data.content_type
