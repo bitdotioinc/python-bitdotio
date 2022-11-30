@@ -1,2 +1,3 @@
 pytest-cov>=2.8.1
 click
+requests-toolbelt >= 0.10.1
