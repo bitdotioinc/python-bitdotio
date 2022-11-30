@@ -5,6 +5,7 @@ import typing as t
 from contextlib import contextmanager
 
 from requests import Response
+from requests_toolbelt import MultipartEncoder
 
 from bitdotio.api_client import ApiClient
 from bitdotio.utils import (
@@ -226,12 +227,27 @@ class _BitV2:
             }
         )
 
-        files = {}
+        # Python<3.10 is limited to 2 GiB multi-part encoded files when using
+        # SSL. requests_toolbelt.MultipartEncoder is a workaround for that
+        # limitation. We can remove this workaround later if we drop Python<=3.9.
+        # Refs: https://github.com/psf/requests/issues/2717
+        #       https://bugs.python.org/issue42853
+        headers = {}
         if file is not None:
-            files["file"] = file
+            data = MultipartEncoder(
+                fields={
+                    **data,
+                    'file': (table_name, file),
+                }
+            )
+            headers["Content-Type"] = data.content_type
 
-        return self._api_client.post(f"/db/{db_name}/import/", data=data, files=files)
-
+        return self._api_client.post(
+            f"/db/{db_name}/import/",
+            data=data,
+            headers=headers,
+        )
+        
     @api_method()
     def get_import_job(self, import_id: str):
         return self._api_client.get(f"/import/{import_id}")

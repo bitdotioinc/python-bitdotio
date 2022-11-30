@@ -1,7 +1,9 @@
 import io
 import unittest
 import uuid
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, ANY
+
+from requests_toolbelt import MultipartEncoder
 
 from bitdotio import bitdotio
 from bitdotio._bitdotio import ApiError
@@ -180,18 +182,32 @@ class TestApiMethods(ApiTestCase):
 
 
 class TestImports(ApiTestCase):
+    @patch("requests_toolbelt.multipart.encoder.uuid4")
     @patch("bitdotio.api_client.ApiClient.request")
-    def test_create_import_job_file_ok(self, mock_request: Mock) -> None:
+    def test_create_import_job_file_ok(self, mock_request: Mock, mock_uuid4: Mock) -> None:
+        mock_uuid4.return_value = uuid.uuid4()
+
         file = io.BytesIO(b"foo")
         mock_request.return_value.ok = True
         mock_request.return_value.json.return_value = {"foo": "bar"}
         self.b.create_import_job("my/db", "table", infer_header="first_row", file=file)
+        data = {"table_name": "table", "infer_header": "first_row"}
+        data = MultipartEncoder(
+            fields={
+                'file': (data["table_name"], file),
+                **data,
+            }
+        )
         mock_request.assert_called_once_with(
             "POST",
             "/db/my/db/import/",
             json=None,
-            data={"table_name": "table", "infer_header": "first_row"},
-            files={"file": file},
+            data=ANY,
+            headers={"Content-Type": data.content_type}
+        )
+        self.assertEqual(
+            data.fields,
+            mock_request.call_args.kwargs["data"].fields,
         )
 
     @patch("bitdotio.api_client.ApiClient.request")
@@ -205,7 +221,7 @@ class TestImports(ApiTestCase):
             "/db/my/db/import/",
             json=None,
             data={"table_name": "table", "schema_name": "schema", "file_url": url},
-            files={},
+            headers={},
         )
 
     @patch("bitdotio.api_client.ApiClient.request")
