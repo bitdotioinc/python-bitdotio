@@ -30,6 +30,7 @@ class IgnoreRequiredWithHelp(click.Group):
 
 
 @click.group(cls=IgnoreRequiredWithHelp)
+@click.version_option(__version__, '-v', '--version', is_flag=True, help="Print bit version and exit")
 @click.option(
     "-k",
     "--key",
