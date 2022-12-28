@@ -20,6 +20,10 @@ pip install 'bitdotio[psycopg2]'
 pip install 'bitdotio[psycopg2-binary]'
 ```
 
+## Versioning
+
+`python-bitdotio` uses [semantic versioning](https://semver.org/).
+
 # `bitdotio` module
 
 ## Usage
