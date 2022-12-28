@@ -470,7 +470,7 @@ A dict describing the status and metadata of an export job.
 
 #### `bitdotio.list_service_accounts()`
 
-List metadata pertaining to service the requester has created.
+List metadata pertaining to service accounts the requester has created.
 
 _Returns_:
 
