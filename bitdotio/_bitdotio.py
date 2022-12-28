@@ -287,6 +287,14 @@ class _BitV2:
     def get_export_job(self, export_id: str):
         return self._api_client.get(f"/export/{export_id}")
 
+    @api_method(returning="service_accounts")
+    def list_service_accounts(self):
+        return self._api_client.get("/service-account/")
+
+    @api_method()
+    def get_service_account(self, service_account_id: str):
+        return self._api_client.get(f"/service-account/{service_account_id}")
+
 
 def _print_psycopg2_message():
     print(

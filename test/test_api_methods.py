@@ -404,3 +404,45 @@ class TestExports(ApiTestCase):
             self.b.get_export_job(str(uuid.uuid4()))
             self.assertEqual(cm.exception.status_code, status_code)
             self.assertEqual(cm.exception.data, error_data)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_list_service_accounts_ok(self, mock_request: Mock) -> None:
+        expected = ["foo", "bar"]
+        mock_request.return_value.ok = True
+        mock_request.return_value.status_code = 200
+        mock_request.return_value.json.return_value = {"service_accounts": expected}
+        result = self.b.list_service_accounts()
+        self.assertEqual(result, expected)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_list_service_accounts_error(self, mock_request: Mock) -> None:
+        status_code = 400
+        error_data = {"error": "whoops"}
+        mock_request.return_value.ok = False
+        mock_request.return_value.status_code = status_code
+        mock_request.return_value.json.return_value = error_data
+        with self.assertRaises(ApiError) as cm:
+            self.b.list_service_accounts()
+            self.assertEqual(cm.exception.status_code, status_code)
+            self.assertEqual(cm.exception.data, error_data)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_get_service_acount_ok(self, mock_request: Mock) -> None:
+        expected = {"foo": "bar"}
+        mock_request.return_value.ok = True
+        mock_request.return_value.status_code = 200
+        mock_request.return_value.json.return_value = expected
+        result = self.b.get_service_account(str(uuid.uuid4()))
+        self.assertEqual(result, expected)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_get_service_account_error(self, mock_request: Mock) -> None:
+        status_code = 400
+        error_data = {"error": "whoops"}
+        mock_request.return_value.ok = False
+        mock_request.return_value.status_code = status_code
+        mock_request.return_value.json.return_value = error_data
+        with self.assertRaises(ApiError) as cm:
+            self.b.get_service_account(str(uuid.uuid4()))
+            self.assertEqual(cm.exception.status_code, status_code)
+            self.assertEqual(cm.exception.data, error_data)
