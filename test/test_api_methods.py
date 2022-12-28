@@ -180,11 +180,152 @@ class TestApiMethods(ApiTestCase):
             self.assertEqual(cm.exception.status_code, status_code)
             self.assertEqual(cm.exception.data, error_data)
 
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_list_service_accounts_ok(self, mock_request: Mock) -> None:
+        expected = ["foo", "bar"]
+        mock_request.return_value.ok = True
+        mock_request.return_value.status_code = 200
+        mock_request.return_value.json.return_value = {"service_accounts": expected}
+        result = self.b.list_service_accounts()
+        self.assertEqual(result, expected)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_list_service_accounts_error(self, mock_request: Mock) -> None:
+        status_code = 400
+        error_data = {"error": "whoops"}
+        mock_request.return_value.ok = False
+        mock_request.return_value.status_code = status_code
+        mock_request.return_value.json.return_value = error_data
+        with self.assertRaises(ApiError) as cm:
+            self.b.list_service_accounts()
+            self.assertEqual(cm.exception.status_code, status_code)
+            self.assertEqual(cm.exception.data, error_data)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_get_service_acount_ok(self, mock_request: Mock) -> None:
+        expected = {"foo": "bar"}
+        mock_request.return_value.ok = True
+        mock_request.return_value.status_code = 200
+        mock_request.return_value.json.return_value = expected
+        result = self.b.get_service_account(str(uuid.uuid4()))
+        self.assertEqual(result, expected)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_get_service_account_error(self, mock_request: Mock) -> None:
+        status_code = 400
+        error_data = {"error": "whoops"}
+        mock_request.return_value.ok = False
+        mock_request.return_value.status_code = status_code
+        mock_request.return_value.json.return_value = error_data
+        with self.assertRaises(ApiError) as cm:
+            self.b.get_service_account(str(uuid.uuid4()))
+            self.assertEqual(cm.exception.status_code, status_code)
+            self.assertEqual(cm.exception.data, error_data)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_create_service_account_key_ok(self, mock_request: Mock) -> None:
+        expected = {"foo": "bar"}
+        mock_request.return_value.ok = True
+        mock_request.return_value.status_code = 200
+        mock_request.return_value.json.return_value = expected
+        result = self.b.create_service_account_key(str(uuid.uuid4()))
+        self.assertEqual(result, expected)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_create_service_account_key_error(self, mock_request: Mock) -> None:
+        status_code = 400
+        error_data = {"error": "whoops"}
+        mock_request.return_value.ok = False
+        mock_request.return_value.status_code = status_code
+        mock_request.return_value.json.return_value = error_data
+        with self.assertRaises(ApiError) as cm:
+            self.b.create_service_account_key(str(uuid.uuid4()))
+            self.assertEqual(cm.exception.status_code, status_code)
+            self.assertEqual(cm.exception.data, error_data)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_revoke_service_account_keys_ok(self, mock_request: Mock) -> None:
+        expected = None
+        mock_request.return_value.ok = True
+        mock_request.return_value.status_code = 200
+        mock_request.return_value.json.return_value = expected
+        result = self.b.revoke_service_account_keys(str(uuid.uuid4()))
+        self.assertEqual(result, expected)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_revoke_service_account_keys_error(self, mock_request: Mock) -> None:
+        status_code = 400
+        error_data = {"error": "whoops"}
+        mock_request.return_value.ok = False
+        mock_request.return_value.status_code = status_code
+        mock_request.return_value.json.return_value = error_data
+        with self.assertRaises(ApiError) as cm:
+            self.b.revoke_service_account_keys(str(uuid.uuid4()))
+            self.assertEqual(cm.exception.status_code, status_code)
+            self.assertEqual(cm.exception.data, error_data)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_create_key_ok(self, mock_request: Mock) -> None:
+        expected = {"foo": "bar"}
+        mock_request.return_value.ok = True
+        mock_request.return_value.status_code = 200
+        mock_request.return_value.json.return_value = expected
+        result = self.b.create_key()
+        self.assertEqual(result, expected)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_create_key_error(self, mock_request: Mock) -> None:
+        status_code = 400
+        error_data = {"error": "whoops"}
+        mock_request.return_value.ok = False
+        mock_request.return_value.status_code = status_code
+        mock_request.return_value.json.return_value = error_data
+        with self.assertRaises(ApiError) as cm:
+            self.b.create_key()
+            self.assertEqual(cm.exception.status_code, status_code)
+            self.assertEqual(cm.exception.data, error_data)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_revoke_keys_ok_all(self, mock_request: Mock) -> None:
+        expected = None
+        expected_url = "/api-key/"
+        mock_request.return_value.ok = True
+        mock_request.return_value.status_code = 200
+        mock_request.return_value.json.return_value = expected
+        result = self.b.revoke_keys()
+        self.assertEqual(result, expected)
+        mock_request.assert_called_once_with("DELETE", expected_url)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_revoke_keys_ok_single(self, mock_request: Mock) -> None:
+        expected = None
+        expected_url = f"/api-key/?api_key={self.token}"
+        mock_request.return_value.ok = True
+        mock_request.return_value.status_code = 200
+        mock_request.return_value.json.return_value = expected
+        result = self.b.revoke_keys(self.token)
+        self.assertEqual(result, expected)
+        mock_request.assert_called_once_with("DELETE", expected_url)
+
+    @patch("bitdotio.api_client.ApiClient.request")
+    def test_revoked_keys_error(self, mock_request: Mock) -> None:
+        status_code = 400
+        error_data = {"error": "whoops"}
+        mock_request.return_value.ok = False
+        mock_request.return_value.status_code = status_code
+        mock_request.return_value.json.return_value = error_data
+        with self.assertRaises(ApiError) as cm:
+            self.b.revoke_keys()
+            self.assertEqual(cm.exception.status_code, status_code)
+            self.assertEqual(cm.exception.data, error_data)
+
 
 class TestImports(ApiTestCase):
     @patch("requests_toolbelt.multipart.encoder.uuid4")
     @patch("bitdotio.api_client.ApiClient.request")
-    def test_create_import_job_file_ok(self, mock_request: Mock, mock_uuid4: Mock) -> None:
+    def test_create_import_job_file_ok(
+        self, mock_request: Mock, mock_uuid4: Mock
+    ) -> None:
         mock_uuid4.return_value = uuid.uuid4()
 
         file = io.BytesIO(b"foo")
@@ -194,7 +335,7 @@ class TestImports(ApiTestCase):
         data = {"table_name": "table", "infer_header": "first_row"}
         data = MultipartEncoder(
             fields={
-                'file': (data["table_name"], file),
+                "file": (data["table_name"], file),
                 **data,
             }
         )
@@ -203,7 +344,7 @@ class TestImports(ApiTestCase):
             "/db/my/db/import/",
             json=None,
             data=ANY,
-            headers={"Content-Type": data.content_type}
+            headers={"Content-Type": data.content_type},
         )
         self.assertEqual(
             data.fields,

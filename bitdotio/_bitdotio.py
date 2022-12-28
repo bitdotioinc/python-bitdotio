@@ -287,6 +287,34 @@ class _BitV2:
     def get_export_job(self, export_id: str):
         return self._api_client.get(f"/export/{export_id}")
 
+    @api_method(returning="service_accounts")
+    def list_service_accounts(self):
+        return self._api_client.get("/service-account/")
+
+    @api_method()
+    def get_service_account(self, service_account_id: str):
+        return self._api_client.get(f"/service-account/{service_account_id}")
+
+    @api_method()
+    def create_service_account_key(self, service_account_id: str):
+        return self._api_client.post(f"/service-account/{service_account_id}/api-key/")
+
+    @api_method()
+    def revoke_service_account_keys(self, service_account_id: str):
+        return self._api_client.delete(
+            f"/service-account/{service_account_id}/api-key/"
+        )
+
+    @api_method()
+    def create_key(self):
+        return self._api_client.post("/api-key/")
+
+    @api_method()
+    def revoke_keys(self, api_key: t.Optional[str] = None):
+        path = "/api-key/"
+        if api_key:
+            path += f"?api_key={api_key}"
+        return self._api_client.delete(path)
 
 def _print_psycopg2_message():
     print(

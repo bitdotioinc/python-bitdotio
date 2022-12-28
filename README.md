@@ -20,6 +20,10 @@ pip install 'bitdotio[psycopg2]'
 pip install 'bitdotio[psycopg2-binary]'
 ```
 
+## Versioning
+
+`python-bitdotio` uses [semantic versioning](https://semver.org/).
+
 # `bitdotio` module
 
 ## Usage
@@ -465,5 +469,77 @@ _Args_:
 _Returns_:
 
 A dict describing the status and metadata of an export job.
+
+<hr>
+
+#### `bitdotio.list_service_accounts()`
+
+List metadata pertaining to service accounts the requester has created.
+
+_Returns_:
+
+List of dictionaries describing service account metadata.
+
+<hr>
+
+#### `bitdotio.get_service_account(service_account_id)`
+
+Get metadata about a single service account
+
+_Args_:
+
+- `service_account_id (str)`: ID of the service account
+
+_Returns_:
+
+Dictionary describing service account metadata.
+
+<hr>
+
+#### `bitdotio.create_service_account_key(service_account_id)`
+
+Create a new API key/database password for a given service account
+
+_Args_:
+
+- `service_account_id (str)`: ID of the service account
+
+_Returns_:
+
+Dictionary containing newly created credentials
+
+<hr>
+
+#### `bitdotio.revoke_service_account_keys(service_account_id)`
+
+Revoke all API keys/database passwords for the given service account
+
+_Args_:
+
+- `service_account_id (str)`: ID of the service account
+
+_Returns_: None
+
+<hr>
+
+#### `bitdotio.create_key()`
+
+Create a new API key/database password with the same permissions as the requester
+
+_Returns_:
+
+Dictionary containing newly created credentials
+
+<hr>
+
+#### `bitdotio.revoke_keys(api_key=None)`
+
+Revoke API keys/database passwords. If `api_key` is given, only that API key will
+be revoked. Otherwise, all API keys for the requester will be revoked.
+
+_Kwargs_:
+- `api_key (Optional[str])`: API key to revoke
+
+_Returns_: None
 
 <hr>
