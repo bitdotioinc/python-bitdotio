@@ -305,6 +305,16 @@ class _BitV2:
             f"/service-account/{service_account_id}/api-key/"
         )
 
+    @api_method()
+    def create_key(self):
+        return self._api_client.post("/api-key/")
+
+    @api_method()
+    def revoke_keys(self, api_key: t.Optional[str] = None):
+        path = "/api-key/"
+        if api_key:
+            path += f"?api_key={api_key}"
+        return self._api_client.delete(path)
 
 def _print_psycopg2_message():
     print(
