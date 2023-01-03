@@ -147,6 +147,7 @@ class _BitV2:
         with self.pooled_connection(db_name) as conn:
             with conn.cursor() as cursor:
                 yield cursor
+                conn.commit()
 
     @api_method()
     def query(self, db_name: str, query_str: str, data_format: t.Optional[str] = None):
