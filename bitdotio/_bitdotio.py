@@ -136,8 +136,8 @@ class _BitV2:
         pool, conn = None, None
         try:
             pool = self._get_pool(db_name)
-            conn = pool.getconn()
-            yield conn
+            with pool.getconn() as conn:
+                yield conn
         finally:
             if pool is not None and conn is not None:
                 pool.putconn(conn)

@@ -28,6 +28,8 @@ class TestConnect(unittest.TestCase):
         self.assertEqual(len(self.b._pools), 1)
         mock_create_pool.return_value.getconn.assert_called_once()
         mock_create_pool.return_value.putconn.assert_called_once()
+        # validate that connections are exposed inside an internal context manager
+        mock_create_pool.return_value.getconn.return_value.__exit__.assert_called_once()
 
         mock_create_pool.return_value.getconn.reset_mock()
         mock_create_pool.return_value.putconn.reset_mock()
@@ -39,6 +41,7 @@ class TestConnect(unittest.TestCase):
         self.assertEqual(len(self.b._pools), 1)
         mock_create_pool.return_value.getconn.assert_called_once()
         mock_create_pool.return_value.putconn.assert_called_once()
+        mock_create_pool.return_value.getconn.return_value.__exit__.assert_called_once()
 
         mock_create_pool.return_value.getconn.reset_mock()
         mock_create_pool.return_value.putconn.reset_mock()
@@ -50,6 +53,7 @@ class TestConnect(unittest.TestCase):
         self.assertEqual(len(self.b._pools), 2)
         mock_create_pool.return_value.getconn.assert_called_once()
         mock_create_pool.return_value.putconn.assert_called_once()
+        mock_create_pool.return_value.getconn.return_value.__exit__.assert_called_once()
 
     @patch("bitdotio._bitdotio._BitV2._create_pool")
     def test_cursor(self, mock_create_pool: Mock) -> None:
@@ -61,6 +65,8 @@ class TestConnect(unittest.TestCase):
         self.assertEqual(len(self.b._pools), 1)
         mock_create_pool.return_value.getconn.assert_called_once()
         mock_create_pool.return_value.putconn.assert_called_once()
+        # validate that connections are exposed inside an internal context manager
+        mock_create_pool.return_value.getconn.return_value.__exit__.assert_called_once()
 
         mock_create_pool.return_value.getconn.reset_mock()
         mock_create_pool.return_value.putconn.reset_mock()
@@ -72,6 +78,7 @@ class TestConnect(unittest.TestCase):
         self.assertEqual(len(self.b._pools), 1)
         mock_create_pool.return_value.getconn.assert_called_once()
         mock_create_pool.return_value.putconn.assert_called_once()
+        mock_create_pool.return_value.getconn.return_value.__exit__.assert_called_once()
 
         mock_create_pool.return_value.getconn.reset_mock()
         mock_create_pool.return_value.putconn.reset_mock()
@@ -83,3 +90,4 @@ class TestConnect(unittest.TestCase):
         self.assertEqual(len(self.b._pools), 2)
         mock_create_pool.return_value.getconn.assert_called_once()
         mock_create_pool.return_value.putconn.assert_called_once()
+        mock_create_pool.return_value.getconn.return_value.__exit__.assert_called_once()

@@ -254,8 +254,8 @@ A bit.io SDK instance
 #### `bitdotio.pooled_connection(db_name)`
 
 Creates a context manager which provides a connection from the connection pool for the
-given database name. When the context manager is exited, the connection will be returned
-to the connection pool.
+given database name. When the context manager is exited, the connection's transaction
+will be committed, and the connection will be returned to the connection pool.
 
 _Args_:
 - `db_name (str)`: The name of the database to connect to.
