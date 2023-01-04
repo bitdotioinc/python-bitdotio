@@ -137,7 +137,8 @@ class _BitV2:
         try:
             pool = self._get_pool(db_name)
             conn = pool.getconn()
-            yield conn
+            with conn:
+                yield conn
         finally:
             if pool is not None and conn is not None:
                 pool.putconn(conn)
@@ -147,7 +148,6 @@ class _BitV2:
         with self.pooled_connection(db_name) as conn:
             with conn.cursor() as cursor:
                 yield cursor
-                conn.commit()
 
     @api_method()
     def query(self, db_name: str, query_str: str, data_format: t.Optional[str] = None):
