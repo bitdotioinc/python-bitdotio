@@ -1,2 +1,1 @@
-# python-bitdotio
-Databricks bugbounty POC
+# Databricks bugbounty POC
